@@ -1,0 +1,173 @@
+﻿<Page x:Class="SAW_TRAY_VISION_V01.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:SAW_TRAY_VISION_V01"
+      mc:Ignorable="d"
+      Title="HomePage" Height="922" Width="1802">
+    <DockPanel Background="White">
+        <!-- Button Dockpanel -->
+        <Border DockPanel.Dock="Left" BorderThickness="2" Background="White">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.RowSpan="4">
+                    <!-- State Button Group -->
+                    <GroupBox  Header="State" x:Name="Gb_State">
+                        <StackPanel>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Init" Click="Btn_Init_Click">INIT</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Mode_Change" Click="Btn_Mode_Change_Click" IsEnabled="True">MODE</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Start" Click="Btn_Start_Click" IsEnabled="True" >START</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Stop" Click="Btn_Stop_Click" IsEnabled="True" >STOP</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Capture" Click="Btn_Capture_Click" IsEnabled="True">CAPTURE</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Detect" Click="Btn_Detect_Click" IsEnabled="True">DETECT</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Result" Click="Btn_Result_Click" IsEnabled="True">RESULT</Button>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Action Button Group -->
+                    <GroupBox  Header="Action" x:Name="Gb_Action">
+                        <StackPanel>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Reset" Click="Btn_Reset_Click" IsEnabled="False">RESET</Button>
+                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_BuzzerOff" Click="Btn_BuzzerOff_Click" IsEnabled="False">BUZZER OFF</Button>
+
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Work place -->
+        <Border DockPanel.Dock="Right" BorderThickness="2">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Status Group -->
+                        <GroupBox Header="Status" Grid.Column="0" Grid.ColumnSpan="2">
+                            <Label Margin="5" FontSize="18" x:Name="Lb_Status" Content="NOT INIT"/>
+                        </GroupBox>
+                        <!-- Result Group -->
+                        <GroupBox Header="Result" Grid.Column="2">
+                            <Label Margin="5" FontSize="20" x:Name="Lb_Reslut" Background="Gray" Content="---"/>
+                        </GroupBox>
+                    </Grid>
+                    <!-- Setting Group -->
+                    <GroupBox Header="Setting">
+                        <Grid Visibility="Visible">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Label    Grid.Row="0" Grid.Column="0" Margin="5" FontSize="20" Content = "Camera"/>
+                            <ComboBox Grid.Row="0" 
+                                      Grid.Column="1" 
+                                      Margin="5" 
+                                      FontSize="20" 
+                                      Grid.ColumnSpan="4" 
+                                      x:Name="Cb_Camera" 
+                                      DisplayMemberPath="Name"
+                                      ItemsSource="{Binding VideoDevices}"
+                                      SelectedItem="{Binding CurrentDevice}"/>
+
+                            <Label    Grid.Row="2" Grid.Column="0" Margin="5" FontSize="20" Content = "Recipe"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" FontSize="20" Grid.ColumnSpan="4" x:Name="Cb_Recipe" ItemsSource="{Binding TrayIDList}" IsEditable="True" SelectionChanged="Cb_Recipe_SelectionChanged" />
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- LiveWebcam Group -->
+                    <GroupBox Header="Live Webcam" HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                        <StackPanel Margin="0">
+                            <Image x:Name="videoPlayer" Width="640" Height="480" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5"></Image>
+                        </StackPanel>
+                    </GroupBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0" Header="Digital Input">
+                            <StackPanel  Orientation="Vertical">
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DI_Tray_Present_Sensor">DI Tray Present Sensor</CheckBox>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_Trigger">Trigger</CheckBox>
+                                    <Label x:Name="Lb_Trigger" Grid.Column="1" Content="0" FontSize="20" VerticalContentAlignment="Center"></Label>
+                                </Grid>
+
+
+
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="Digital Output">
+                            <StackPanel Grid.Column="1" Orientation="Vertical">
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DO_Red_Light">DO Red Light
+                                </CheckBox>
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DO_Amber_Light">DO Amber Light</CheckBox>
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DO_Green_Light">DO Green Light</CheckBox>
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DO_Buzzer" Unchecked="Cb_DO_Buzzer_Unchecked" Checked="Cb_DO_Buzzer_Checked">DO Buzzer</CheckBox>
+                                <CheckBox Margin="0,0,5,0" IsEnabled="False" IsChecked="False" FontSize="20" VerticalContentAlignment="Center" x:Name="Cb_DO_Disable_Tray_Loading">Disable Tray Loading</CheckBox>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Detection Group -->
+                <GroupBox Header="Detection" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" Grid.RowSpan="5" Margin="0,0,0,0" Foreground="Black" BorderThickness="2">
+                    <StackPanel>
+                        <!-- Detected Image result-->
+                        <Image Height="720" Width="960" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" x:Name="ImgSnapShoot"></Image>
+                        <!-- Tray ID List Results -->
+                        <TabControl Height="165" Width="970" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                            <TabItem Header="Tray ID">
+                                <DataGrid FontSize="20" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,0,0" x:Name="Dg_TrayID" ItemsSource="{Binding}">
+                                    <DataGrid.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Result}" Value="PASS">
+                                                    <Setter Property="Background" Value="Green"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Result}" Value="FAIL">
+                                                    <Setter Property="Background" Value="Red"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.CellStyle>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="Debug">
+                                <DataGrid FontSize="20" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  Margin="0,0,0,0" x:Name="Dg_Debug"></DataGrid>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Border>
+    </DockPanel>
+</Page>
