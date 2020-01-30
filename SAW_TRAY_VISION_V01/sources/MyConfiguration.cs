@@ -60,6 +60,9 @@ namespace SAW_TRAY_VISION_V01.sources
         public Parameter Timer_Interval_Modbus;
         public Parameter Timer_Interval_StateMachine;
 
+        //
+        public Parameter Box_Height_Min;
+
         public string LoadAllParameters()
         {
             XmlDocument Doc = new XmlDocument();
@@ -135,6 +138,10 @@ namespace SAW_TRAY_VISION_V01.sources
                         case "Timer_Interval_StateMachine":
                             this.Timer_Interval_StateMachine.Name = node.ChildNodes[0].InnerText;
                             this.Timer_Interval_StateMachine.Value = node.ChildNodes[1].InnerText;
+                            break;
+                        case "Box_Height_Min":
+                            this.Box_Height_Min.Name = node.ChildNodes[0].InnerText;
+                            this.Box_Height_Min.Value = node.ChildNodes[1].InnerText;
                             break;
                     }
                 }

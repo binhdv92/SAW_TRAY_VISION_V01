@@ -7,63 +7,81 @@
   
   <parameter>
     <name>Modbus_Server_IP</name>
-    <value>172.20.9.201</value>
+    <value>192.168.1.53</value>
   </parameter>
-	
+  
   <parameter>
     <name>Modbus_Server_Port</name>
     <value>502</value>
   </parameter>
+  
   <parameter>
     <name>Modbus_Server_LogFileFilename</name>
     <value>Modbus_IO_Log.txt</value>
   </parameter>
+  
   <parameter>
     <name>Yolov3_Cfg</name>
     <value>sources/algorithm/cfg/yolov3-itn-fullbox.cfg</value>
   </parameter>
+  
   <parameter>
     <name>Yolov3_Weights</name>
     <value>sources/algorithm/cfg/yolov3-itn-fullbox_last.weights</value>
   </parameter>
+  
   <parameter>
     <name>Yolov3_Names</name>
     <value>sources/algorithm/cfg/itn_fullbox.names</value>
   </parameter>
+  
   <parameter>
     <name>DI_Tray_Present_Sensor</name>
     <value>0</value>
   </parameter>
+  
   <parameter>
     <name>DO_Red_Light</name>
     <value>0</value>
   </parameter>
+  
   <parameter>
     <name>DO_Amber_Light</name>
     <value>1</value>
   </parameter>
+  
   <parameter>
     <name>DO_Green_Light</name>
     <value>2</value>
   </parameter>
+  
   <parameter>
     <name>DO_Buzzer</name>
     <value>3</value>
   </parameter>
+  
   <parameter>
     <name>DO_Disable_Tray_Loading</name>
     <value>4</value>
   </parameter>
+  
   <parameter>
     <name>Threshold_Trigger</name>
     <value>10</value>
   </parameter>
+  
   <parameter>
     <name>Timer_Interval_Modbus</name>
     <value>50</value>
   </parameter>
+  
   <parameter>
     <name>Timer_Interval_StateMachine</name>
     <value>50</value>
+  </parameter>
+  
+  <parameter>
+    <name>Box_Height_Min</name>
+    <value>65</value>
   </parameter>
 </root>

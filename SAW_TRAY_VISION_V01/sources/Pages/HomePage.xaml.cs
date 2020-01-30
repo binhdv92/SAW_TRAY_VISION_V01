@@ -78,6 +78,8 @@ namespace SAW_TRAY_VISION_V01
         public int Pass_FLAG = 0;
         public int Fail_FLAG = 0;
         public string Final_Result_Flag;
+        public System.Drawing.Image Img_Drawing;
+        public PngBitmapEncoder Encoder_Public = new PngBitmapEncoder();
         #endregion
 
         #region Ham con
@@ -162,6 +164,8 @@ namespace SAW_TRAY_VISION_V01
             Btn_Reset.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
+            Btn_Save_Result.IsEnabled = false;
+
             //Status
             Lb_Status.Content = "Not Initialization";
             Lb_Reslut.Content = "---";
@@ -196,6 +200,8 @@ namespace SAW_TRAY_VISION_V01
             //Action
             Btn_Reset.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
+
+            Btn_Save_Result.IsEnabled = false;
 
             //Status
             Lb_Status.Content = "AUTO";
@@ -242,6 +248,8 @@ namespace SAW_TRAY_VISION_V01
             Btn_Reset.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
+            Btn_Save_Result.IsEnabled = true;
+
             //Status
             Lb_Status.Content = "MANUAL";
             Lb_Reslut.Content = "---";
@@ -286,6 +294,8 @@ namespace SAW_TRAY_VISION_V01
             //Action
             Btn_Reset.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
+
+            Btn_Save_Result.IsEnabled = false;
 
             //Status
             Lb_Status.Content = "RUNNING";
@@ -332,6 +342,8 @@ namespace SAW_TRAY_VISION_V01
             Btn_Reset.IsEnabled = true;
             Btn_BuzzerOff.IsEnabled = true;
 
+            //Btn_Save_Result.IsEnabled = false;
+
             //Status
             Lb_Status.Content = "NO TRAY DETECTED";
             Lb_Reslut.Content = "NO TRAY DETECTED";
@@ -350,8 +362,7 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Green_Light.IsChecked = false;
             Cb_DO_Buzzer.IsChecked = true;
             Cb_DO_Disable_Tray_Loading.IsChecked = true;
-
-
+            
             Cb_DO_Red_Light.IsEnabled = false;
             Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
@@ -372,6 +383,8 @@ namespace SAW_TRAY_VISION_V01
             //Action
             Btn_Reset.IsEnabled = true;
             Btn_BuzzerOff.IsEnabled = true;
+
+            Btn_Save_Result.IsEnabled = true;
 
             //Status
             Lb_Status.Content = "WRONG TRAY";
@@ -437,7 +450,7 @@ namespace SAW_TRAY_VISION_V01
         #region Btn function
         private void Dt_ModbusTicker(object sender, EventArgs e)
         {
-            try//read Input
+            try// ---read Input
             {
                 bool[] DI_Tray_Present_Sensor = modbusClient.ReadDiscreteInputs(int.Parse(Paras.DI_Tray_Present_Sensor.Value), 1);
                 Cb_DI_Tray_Present_Sensor.IsChecked = DI_Tray_Present_Sensor[0];
@@ -448,10 +461,6 @@ namespace SAW_TRAY_VISION_V01
                     {
                         Threshold_Counter++;
                     }
-                    //else if (Threshold_Counter == float.Parse(Paras.Threshold_Trigger.Value) && Cb_Trigger.IsChecked==false)
-                    //{
-                        //Cb_Trigger.IsChecked = true;
-                    //}
                 }
                 else
                 {
@@ -468,7 +477,7 @@ namespace SAW_TRAY_VISION_V01
                 Dt_Modbus.Stop();
             }
             
-            // Write Digital Output
+            // ---Write Digital Output
             try
             {
                 modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Red_Light.Value), Convert.ToBoolean(Cb_DO_Red_Light.IsChecked));
@@ -479,7 +488,6 @@ namespace SAW_TRAY_VISION_V01
             }
             catch
             {
-                //MessageBox.Show("Error105: Loss connection to the Modbus Server at the address " + Paras.Modbus_Server_IP.Value + ":" + Paras.Modbus_Server_Port.Value);
                 MessageBox.Show("Error105: Fail to write Digital Output");
                 StateMachine_NotInit();
                 Dt_Modbus.Stop();
@@ -496,7 +504,6 @@ namespace SAW_TRAY_VISION_V01
                         StateMachine_Running();
                         if (Threshold_Counter == float.Parse(Paras.Threshold_Trigger.Value))
                         {
-                            //Cb_Trigger.IsChecked = false;
                             StateMachine_Flag = "CAPTURE";
                         }
                         break;
@@ -526,16 +533,15 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Init_Click(object sender, RoutedEventArgs e)
         {
-            try // Modbus Server Setup
+            try // ---Modbus Server Setup
             {
                 modbusClient = new ModbusClient(Paras.Modbus_Server_IP.Value, int.Parse(Paras.Modbus_Server_Port.Value));
                 modbusClient.LogFileFilename = Paras.Modbus_Server_LogFileFilename.Value;
                 modbusClient.Connect();
                 Dt_Modbus.Start();
 
-                try //
+                try
                 {
-                    //StartCamera();
                     StartCamera(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
                     StateMachine_Auto();
                 }
@@ -579,20 +585,16 @@ namespace SAW_TRAY_VISION_V01
             Dt_StateMachine.Start();
             StateMachine_Flag = "RUNNING";
             Threshold_Counter = 0;
-            //Dt_Modbus.Start();//Active StateMachineLoop Mode
         }
 
         private void Btn_Stop_Click(object sender, RoutedEventArgs e)
         {
             StateMachine_Auto();
             Dt_StateMachine.Stop();
-            StopCamera();
-            //Dt_Modbus.Stop();//Deactive StateMachineLoop Mode
         }
 
         private void Btn_Capture_Click(object sender, RoutedEventArgs e)
         {
-            //Capture_Flag = true;
             Preprocess_Image_Function();
             Dg_TrayID.ItemsSource = null;
             Lb_Reslut.Content = "---";
@@ -606,10 +608,11 @@ namespace SAW_TRAY_VISION_V01
                 BitmapImage img = videoPlayer.Source as BitmapImage;
                 ImgSnapShoot.Source = img;
                 this.Bi_Public = img;
-                
+
                 //Convert Bitmap to byte[]
-                var Encoder_Temp = new PngBitmapEncoder();
+                PngBitmapEncoder Encoder_Temp = new PngBitmapEncoder();
                 Encoder_Temp.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
+                Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
                 using (MemoryStream ms = new MemoryStream())
                 {
                     Encoder_Temp.Save(ms);
@@ -623,7 +626,6 @@ namespace SAW_TRAY_VISION_V01
         }
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
-            //Preprocess_Image_Function();
             // Yolov3 process
             yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
             var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
@@ -704,57 +706,61 @@ namespace SAW_TRAY_VISION_V01
             boxgroup.Sort = "Y asc";
             for (int i_group = 0; i_group < boxgroup.Count; i_group++)
             {
-                ID_table = new DataTable();
-                for (int i = 0; i < header_array.Length; i++)
+                double _Temp_Box_Height = double.Parse(boxgroup[i_group]["Height"].ToString());
+                if (_Temp_Box_Height >= double.Parse(Paras.Box_Height_Min.Value))
                 {
-                    column = new DataColumn();
-                    column.DataType = System.Type.GetType("System.String");
-                    column.ColumnName = header_array[i];
-                    column.AutoIncrement = false;
-                    column.Caption = header_array[i];
-                    column.ReadOnly = false;
-                    column.Unique = false;
-                    ID_table.Columns.Add(column);
-                }
-
-                double x_max, x_min, y_max, y_min;
-                x_min = double.Parse(boxgroup[i_group]["X"].ToString());
-                x_max = x_min + double.Parse(boxgroup[i_group]["Width"].ToString());
-                y_min = double.Parse(boxgroup[i_group]["Y"].ToString());
-                y_max = y_min + double.Parse(boxgroup[i_group]["Height"].ToString());
-                
-
-                for (int i = 0; i < Dg_Debug.Items.Count - 1; i++)
-                {
-                    Alturos.Yolo.Model.YoloItem row = (Alturos.Yolo.Model.YoloItem)Dg_Debug.Items[i];
-                    DataRow newRow = ID_table.NewRow();
-                    newRow["Type"] = row.Type;
-                    newRow["Confidence"] = row.Confidence;
-                    //Dataview sort by string - X-Y data need to be a sting
-
-                    newRow["X"] = row.X.ToString().PadLeft(5, '0');
-                    newRow["Y"] = row.Y.ToString().PadLeft(5, '0');
-                    newRow["Width"] = row.Width;
-                    newRow["Height"] = row.Height;
-                    //double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
-                    //double y = double.Parse(newRow["Y"].ToString()) + double.Parse(newRow["Height"].ToString()) / 2;
-                    double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
-                    double y = double.Parse(newRow["Y"].ToString()) + double.Parse(newRow["Height"].ToString()) / 2;
-                    if ((x_min <= x) && (x_max >= x) && (y_min <= y) && (y_max >= y) && (row.Type.ToString() != "box"))
+                    ID_table = new DataTable();
+                    for (int i = 0; i < header_array.Length; i++)
                     {
-                        ID_table.Rows.Add(newRow);
+                        column = new DataColumn();
+                        column.DataType = System.Type.GetType("System.String");
+                        column.ColumnName = header_array[i];
+                        column.AutoIncrement = false;
+                        column.Caption = header_array[i];
+                        column.ReadOnly = false;
+                        column.Unique = false;
+                        ID_table.Columns.Add(column);
                     }
+
+                    double x_max, x_min, y_max, y_min;
+                    x_min = double.Parse(boxgroup[i_group]["X"].ToString());
+                    x_max = x_min + double.Parse(boxgroup[i_group]["Width"].ToString());
+                    y_min = double.Parse(boxgroup[i_group]["Y"].ToString());
+                    y_max = y_min + _Temp_Box_Height;
+
+
+                    for (int i = 0; i < Dg_Debug.Items.Count - 1; i++)
+                    {
+                        Alturos.Yolo.Model.YoloItem row = (Alturos.Yolo.Model.YoloItem)Dg_Debug.Items[i];
+                        DataRow newRow = ID_table.NewRow();
+                        newRow["Type"] = row.Type;
+                        newRow["Confidence"] = row.Confidence;
+                        //Dataview sort by string - X-Y data need to be a sting
+
+                        newRow["X"] = row.X.ToString().PadLeft(5, '0');
+                        newRow["Y"] = row.Y.ToString().PadLeft(5, '0');
+                        newRow["Width"] = row.Width;
+                        newRow["Height"] = row.Height;
+                        //double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
+                        //double y = double.Parse(newRow["Y"].ToString()) + double.Parse(newRow["Height"].ToString()) / 2;
+                        double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
+                        double y = double.Parse(newRow["Y"].ToString()) + _Temp_Box_Height / 2;
+                        if ((x_min <= x) && (x_max >= x) && (y_min <= y) && (y_max >= y) && (row.Type.ToString() != "box"))
+                        {
+                            ID_table.Rows.Add(newRow);
+                        }
+                    }
+                    //
+                    dview_sort = ID_table.DefaultView;
+                    dview_sort.Sort = "X asc";
+                    string trayID = "";
+                    for (int i_char = 0; i_char < dview_sort.Count; i_char++)
+                    {
+                        trayID = trayID + dview_sort[i_char]["Type"].ToString();
+                    }
+                    result = new DetectionResult(i_group.ToString(), trayID, Detection_Target_ID);
+                    tray_ID_list.Add(result);
                 }
-                //
-                dview_sort = ID_table.DefaultView;
-                dview_sort.Sort = "X asc";
-                string trayID = "";
-                for (int i_char = 0; i_char < dview_sort.Count; i_char++)
-                {
-                    trayID = trayID + dview_sort[i_char]["Type"].ToString();
-                }
-                result = new DetectionResult(i_group.ToString(), trayID, Detection_Target_ID);
-                tray_ID_list.Add(result);
             }
 
             //Validate the result
@@ -834,15 +840,6 @@ namespace SAW_TRAY_VISION_V01
             this.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split(',')[1];
 
         }
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            StopCamera();
-        }
-
-        private void btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            StartCamera();
-        }
 
         private void video_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
@@ -851,6 +848,7 @@ namespace SAW_TRAY_VISION_V01
                 BitmapImage bi;
                 using (var bitmap = (Bitmap)eventArgs.Frame.Clone())
                 {
+                    
                     bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     bi = bitmap.ToBitmapImage();
 
@@ -864,11 +862,6 @@ namespace SAW_TRAY_VISION_V01
                 StopCamera();
             }
         } 
-
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            StopCamera();
-        }
 
         private void GetVideoDevices()
         {
@@ -908,7 +901,7 @@ namespace SAW_TRAY_VISION_V01
             }
         }
 
-        private void StopCamera()
+        public void StopCamera()
         {
             if (_videoSource != null && _videoSource.IsRunning)
             {
@@ -916,7 +909,6 @@ namespace SAW_TRAY_VISION_V01
                 _videoSource.NewFrame -= new NewFrameEventHandler(video_NewFrame);
             }
         }
-
         
         #endregion
 
@@ -944,8 +936,24 @@ namespace SAW_TRAY_VISION_V01
                 img.Save(output, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
         }
+
         #endregion
 
-
+        private void Btn_Save_Result_Click(object sender, RoutedEventArgs e)
+        {
+            string Output_File_Name =@"outputs\CameraSnapshot.jpg";
+            try
+            {
+                using (FileStream stream5 = new FileStream(Output_File_Name, FileMode.Create))
+                {
+                    Encoder_Public.Save(stream5);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name + "\n\r\n\r" + ex);
+            }
+            
+        }
     }
 }

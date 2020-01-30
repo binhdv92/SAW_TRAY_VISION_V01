@@ -54,5 +54,10 @@ namespace SAW_TRAY_VISION_V01
             Window_About WA = new Window_About();
             WA.Show();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            FWP.StopCamera();
+        }
     }
 }
