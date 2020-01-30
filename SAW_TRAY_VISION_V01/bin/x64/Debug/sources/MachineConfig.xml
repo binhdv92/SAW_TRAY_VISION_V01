@@ -4,10 +4,12 @@
     <name>Modbus_Server_Name</name>
     <value>Wago 750-324</value>
   </parameter>
+  
   <parameter>
     <name>Modbus_Server_IP</name>
-    <value>192.168.1.53</value>
+    <value>172.20.9.201</value>
   </parameter>
+	
   <parameter>
     <name>Modbus_Server_Port</name>
     <value>502</value>
@@ -61,7 +63,7 @@
     <value>50</value>
   </parameter>
   <parameter>
-    <name>Timer_Interval_Trigger</name>
+    <name>Timer_Interval_StateMachine</name>
     <value>50</value>
   </parameter>
 </root>

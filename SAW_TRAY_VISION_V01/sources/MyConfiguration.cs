@@ -57,6 +57,8 @@ namespace SAW_TRAY_VISION_V01.sources
 
         //
         public Parameter Threshold_Trigger;
+        public Parameter Timer_Interval_Modbus;
+        public Parameter Timer_Interval_StateMachine;
 
         public string LoadAllParameters()
         {
@@ -126,13 +128,23 @@ namespace SAW_TRAY_VISION_V01.sources
                             this.Threshold_Trigger.Name  = node.ChildNodes[0].InnerText;
                             this.Threshold_Trigger.Value = node.ChildNodes[1].InnerText;
                             break;
+                        case "Timer_Interval_Modbus":
+                            this.Timer_Interval_Modbus.Name = node.ChildNodes[0].InnerText;
+                            this.Timer_Interval_Modbus.Value = node.ChildNodes[1].InnerText;
+                            break;
+                        case "Timer_Interval_StateMachine":
+                            this.Timer_Interval_StateMachine.Name = node.ChildNodes[0].InnerText;
+                            this.Timer_Interval_StateMachine.Value = node.ChildNodes[1].InnerText;
+                            break;
                     }
                 }
                 Flag_result = "GOOD";
+              
             }
             catch
             {
                 Flag_result = "ERROR";
+      
             }
             return Flag_result;
         }

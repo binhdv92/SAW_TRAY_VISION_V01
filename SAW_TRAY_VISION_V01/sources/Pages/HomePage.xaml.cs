@@ -58,7 +58,7 @@ namespace SAW_TRAY_VISION_V01
 
         #region Khai Bao Bien Toan Cuc
         string Detection_Target_ID = "N/A";
-        bool Pass_FLAG = false;
+
         string UriSource_TestImage = AppDomain.CurrentDomain.BaseDirectory + @"sources\media\CameraSnapshot.jpg";
         public byte[] DataByte_Public;
         public BitmapImage Bi_Public;
@@ -69,12 +69,15 @@ namespace SAW_TRAY_VISION_V01
         // Modbus Server Setup
         ModbusClient modbusClient;
         DispatcherTimer Dt_Modbus = new DispatcherTimer();
-        DispatcherTimer Dt_Trigger = new DispatcherTimer();
+        DispatcherTimer Dt_StateMachine = new DispatcherTimer();
         float Threshold_Counter = 0;
         public string StateMachine_Flag;
         public bool Capture_Flag=false;
         public string[] TrayIDList { get; set; }
-
+        public DetectionResult result;
+        public int Pass_FLAG = 0;
+        public int Fail_FLAG = 0;
+        public string Final_Result_Flag;
         #endregion
 
         #region Ham con
@@ -314,6 +317,47 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
         }
 
+        public void StateMachine_NoTray()
+        {
+            //State
+            Btn_Init.IsEnabled = false;
+            Btn_Mode_Change.IsEnabled = false;
+            Btn_Start.IsEnabled = false;
+            Btn_Stop.IsEnabled = false;
+            Btn_Capture.IsEnabled = false;
+            Btn_Detect.IsEnabled = false;
+            Btn_Result.IsEnabled = false;
+
+            //Action
+            Btn_Reset.IsEnabled = true;
+            Btn_BuzzerOff.IsEnabled = true;
+
+            //Status
+            Lb_Status.Content = "NO TRAY DETECTED";
+            Lb_Reslut.Content = "NO TRAY DETECTED";
+            Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
+
+            //Digital Input
+            Cb_DI_Tray_Present_Sensor.IsEnabled = false;
+            Cb_Trigger.IsEnabled = false;
+
+            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
+            //Cb_Trigger.IsChecked = false; 
+
+            //Digital Output
+            Cb_DO_Red_Light.IsChecked = true;
+            Cb_DO_Amber_Light.IsChecked = false;
+            Cb_DO_Green_Light.IsChecked = false;
+            Cb_DO_Buzzer.IsChecked = true;
+            Cb_DO_Disable_Tray_Loading.IsChecked = true;
+
+
+            Cb_DO_Red_Light.IsEnabled = false;
+            Cb_DO_Amber_Light.IsEnabled = false;
+            Cb_DO_Green_Light.IsEnabled = false;
+            Cb_DO_Buzzer.IsEnabled = false;
+            Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+        }
         public void StateMachine_WrongTray()
         {
             //State
@@ -361,7 +405,12 @@ namespace SAW_TRAY_VISION_V01
         public HomePage()
         {
             InitializeComponent();
-            Paras.LoadAllParameters();
+            
+            string TempStr=Paras.LoadAllParameters();
+            if (TempStr == "ERROR"){
+                MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
+            }
+
             //
             Products.LoadProductLists_Str();
             TrayIDList = Products._ProductLists_Str;
@@ -371,14 +420,14 @@ namespace SAW_TRAY_VISION_V01
             StateMachine_NotInit();
 
             //
-            Dt_Modbus.Interval = TimeSpan.FromMilliseconds(50);
+            Dt_Modbus.Interval = TimeSpan.FromMilliseconds(int.Parse(Paras.Timer_Interval_Modbus.Value));
             Dt_Modbus.Tick += Dt_ModbusTicker;
             Dt_Modbus.Stop();
 
             //
-            Dt_Trigger.Interval = TimeSpan.FromMilliseconds(50);
-            Dt_Trigger.Tick += Dt_TriggerTicker;
-            Dt_Trigger.Stop();
+            Dt_StateMachine.Interval = TimeSpan.FromMilliseconds(int.Parse(Paras.Timer_Interval_StateMachine.Value));
+            Dt_StateMachine.Tick += Dt_StateMachineTicker;
+            Dt_StateMachine.Stop();
             //
             this.DataContext = this;
             GetVideoDevices();
@@ -437,7 +486,7 @@ namespace SAW_TRAY_VISION_V01
             }
         }
 
-        private void Dt_TriggerTicker(object sender, EventArgs e)
+        private void Dt_StateMachineTicker(object sender, EventArgs e)
         {
             if (Lb_Status.Content.ToString() == "RUNNING")
             {
@@ -468,8 +517,7 @@ namespace SAW_TRAY_VISION_V01
                         else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
                         {
                             StateMachine_WrongTray();
-                            Dt_Trigger.Stop();
-
+                            Dt_StateMachine.Stop();
                         }
                         break;
                 }
@@ -528,7 +576,7 @@ namespace SAW_TRAY_VISION_V01
         {
 
             StateMachine_Running();
-            Dt_Trigger.Start();
+            Dt_StateMachine.Start();
             StateMachine_Flag = "RUNNING";
             Threshold_Counter = 0;
             //Dt_Modbus.Start();//Active StateMachineLoop Mode
@@ -537,7 +585,8 @@ namespace SAW_TRAY_VISION_V01
         private void Btn_Stop_Click(object sender, RoutedEventArgs e)
         {
             StateMachine_Auto();
-            Dt_Trigger.Stop();
+            Dt_StateMachine.Stop();
+            StopCamera();
             //Dt_Modbus.Stop();//Deactive StateMachineLoop Mode
         }
 
@@ -673,6 +722,7 @@ namespace SAW_TRAY_VISION_V01
                 x_max = x_min + double.Parse(boxgroup[i_group]["Width"].ToString());
                 y_min = double.Parse(boxgroup[i_group]["Y"].ToString());
                 y_max = y_min + double.Parse(boxgroup[i_group]["Height"].ToString());
+                
 
                 for (int i = 0; i < Dg_Debug.Items.Count - 1; i++)
                 {
@@ -699,17 +749,40 @@ namespace SAW_TRAY_VISION_V01
                 dview_sort = ID_table.DefaultView;
                 dview_sort.Sort = "X asc";
                 string trayID = "";
-                Pass_FLAG = true;
                 for (int i_char = 0; i_char < dview_sort.Count; i_char++)
                 {
                     trayID = trayID + dview_sort[i_char]["Type"].ToString();
                 }
-                DetectionResult result = new DetectionResult(i_group.ToString(), trayID, Detection_Target_ID);
-                if (result.Result != "PASS")
-                {
-                    Pass_FLAG = false;
-                }
+                result = new DetectionResult(i_group.ToString(), trayID, Detection_Target_ID);
                 tray_ID_list.Add(result);
+            }
+
+            //Validate the result
+            Pass_FLAG = 0;
+            Fail_FLAG = 0;
+            foreach(DetectionResult _iresult in tray_ID_list)
+            {
+                if (_iresult.Result == "PASS")
+                {
+                    Pass_FLAG += 1;
+                }
+                else if (_iresult.Result == "FAIL")
+                {
+                    Fail_FLAG += 1;
+                }
+            }
+            //
+            if (Pass_FLAG == 0 && Fail_FLAG == 0)
+            {
+                Final_Result_Flag = "NO_TRAY_DETECTED";
+            }
+            else if(Fail_FLAG > 0)
+            {
+                Final_Result_Flag = "WRONG_TRAY_DETECTED";
+            }
+            else if (Pass_FLAG>0 && Fail_FLAG == 0)
+            {
+                Final_Result_Flag = "PASS";
             }
             #endregion
             Dg_TrayID.ItemsSource = tray_ID_list;
@@ -717,12 +790,17 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Result_Click(object sender, RoutedEventArgs e)
         {
-            if (Pass_FLAG == true)
+            if (Final_Result_Flag == "PASS")
             {
+                StateMachine_Running();
                 Lb_Reslut.Content="PASS";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
             }
-            else if(Pass_FLAG==false)
+            else if(Final_Result_Flag == "NO_TRAY_DETECTED")
+            {
+                StateMachine_NoTray();
+            }
+            else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
             {
                 StateMachine_WrongTray();
             }
@@ -751,7 +829,11 @@ namespace SAW_TRAY_VISION_V01
         #endregion
 
         #region Helper Videos Function
+        private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split(',')[1];
 
+        }
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             StopCamera();
@@ -864,10 +946,6 @@ namespace SAW_TRAY_VISION_V01
         }
         #endregion
 
-        private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            this.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split(',')[1];
-            
-        }
+
     }
 }
