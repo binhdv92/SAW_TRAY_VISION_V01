@@ -32,6 +32,57 @@ using AForge.Wpf;
 
 namespace SAW_TRAY_VISION_V01
 {
+    public class RandomGenerator
+    {
+        // Generate a random number between two numbers    
+        public int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+        }
+
+        // Generate a random string with a given size    
+        public string RandomString(int size, bool lowerCase)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (int i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+            if (lowerCase)
+                return builder.ToString().ToLower();
+            return builder.ToString();
+        }
+
+        // Generate a random password    
+        public string RandomPassword()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(RandomString(4, true));
+            builder.Append(RandomNumber(1000, 9999));
+            builder.Append(RandomString(2, false));
+            return builder.ToString();
+        }
+
+        public string[] Random_Output_File_Name()
+        {
+            DateTime _Now = new DateTime();
+            _Now = DateTime.Now;
+            //
+            string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
+            //
+            StringBuilder _builder = new StringBuilder();
+            _builder.Append(RandomString(5, true));
+            //
+            string[] Output_File_Name = new string[2];
+            Output_File_Name[0]= @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.jpg";
+            Output_File_Name[1]= @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Detected.jpg";
+            return Output_File_Name;
+        }
+    }
     public partial class HomePage : Page, INotifyPropertyChanged
     {
 
@@ -46,6 +97,20 @@ namespace SAW_TRAY_VISION_V01
         }
         private FilterInfo _currentDevice;
 
+        public string RandomString(int size, bool lowerCase)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (int i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+            if (lowerCase)
+                return builder.ToString().ToLower();
+            return builder.ToString();
+        }
         #endregion
 
 
@@ -62,6 +127,8 @@ namespace SAW_TRAY_VISION_V01
         string UriSource_TestImage = AppDomain.CurrentDomain.BaseDirectory + @"sources\media\CameraSnapshot.jpg";
         public byte[] DataByte_Public;
         public BitmapImage Bi_Public;
+        public RenderTargetBitmap Bs_Detected_Public;
+
         public System.Windows.Controls.Image tempImage = new System.Windows.Controls.Image();
         Parameters Paras = new Parameters();
         ProductsList Products = new ProductsList();
@@ -79,7 +146,8 @@ namespace SAW_TRAY_VISION_V01
         public int Fail_FLAG = 0;
         public string Final_Result_Flag;
         public System.Drawing.Image Img_Drawing;
-        public PngBitmapEncoder Encoder_Public = new PngBitmapEncoder();
+        public RandomGenerator _randomGenerator = new RandomGenerator();
+        public string[] Output_File_Name;
         #endregion
 
         #region Ham con
@@ -418,7 +486,13 @@ namespace SAW_TRAY_VISION_V01
         public HomePage()
         {
             InitializeComponent();
-            
+
+            //Initial Random string
+            // ---Create a Output_File_Name Randomly.
+            Output_File_Name= _randomGenerator.Random_Output_File_Name();
+            Tb_Save_Result.Text = Output_File_Name[0];
+
+            //
             string TempStr=Paras.LoadAllParameters();
             if (TempStr == "ERROR"){
                 MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
@@ -601,7 +675,7 @@ namespace SAW_TRAY_VISION_V01
             Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
         }
 
-        private void Preprocess_Image_Function()
+        public void Preprocess_Image_Function()
         {
             try
             {
@@ -612,7 +686,7 @@ namespace SAW_TRAY_VISION_V01
                 //Convert Bitmap to byte[]
                 PngBitmapEncoder Encoder_Temp = new PngBitmapEncoder();
                 Encoder_Temp.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
-                Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
+                //Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
                 using (MemoryStream ms = new MemoryStream())
                 {
                     Encoder_Temp.Save(ms);
@@ -660,6 +734,7 @@ namespace SAW_TRAY_VISION_V01
             RenderTargetBitmap rtb = new RenderTargetBitmap(Bi_Public.PixelWidth, Bi_Public.PixelHeight, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(Dv);
             ImgSnapShoot.Source = rtb;
+            this.Bs_Detected_Public = rtb;
             #endregion
 
             #region Grouping
@@ -941,19 +1016,42 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Save_Result_Click(object sender, RoutedEventArgs e)
         {
-            string Output_File_Name =@"outputs\CameraSnapshot.jpg";
+            //Preprocess_Image_Function();
+            PngBitmapEncoder Encoder_Public = new PngBitmapEncoder();
+            Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)this.Bi_Public));
             try
             {
-                using (FileStream stream5 = new FileStream(Output_File_Name, FileMode.Create))
+                using (FileStream stream5 = new FileStream(Output_File_Name[0], FileMode.Create))
                 {
                     Encoder_Public.Save(stream5);
+                    stream5.Close();
                 }
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name + "\n\r\n\r" + ex);
+                MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name[0] + "\n\r\n\r" + ex);
             }
-            
+
+            //------------ Detected
+            PngBitmapEncoder Encoder_Detected_Public = new PngBitmapEncoder();
+            Encoder_Detected_Public.Frames.Add(BitmapFrame.Create(this.Bs_Detected_Public));
+            try
+            {
+                using (FileStream stream5 = new FileStream(Output_File_Name[1], FileMode.Create))
+                {
+                    Encoder_Detected_Public.Save(stream5);
+                    stream5.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name[1] + "\n\r\n\r" + ex);
+            }
+
+            //--- update random name
+            Output_File_Name = _randomGenerator.Random_Output_File_Name();
+            Tb_Save_Result.Text = Output_File_Name[0];
         }
     }
+
 }

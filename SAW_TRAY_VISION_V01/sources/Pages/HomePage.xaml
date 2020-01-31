@@ -42,12 +42,7 @@
                         </StackPanel>
                     </GroupBox>
 
-                    <!-- Action Button Group -->
-                    <GroupBox  Header="SAVE Result" x:Name="Gb_Save">
-                        <StackPanel>
-                            <Button Margin="0,0,0,5" FontSize="20" x:Name="Btn_Save_Result" Click="Btn_Save_Result_Click" IsEnabled="False">SAVE RESULT</Button>
-                        </StackPanel>
-                    </GroupBox>
+                    
                 </StackPanel>
             </Grid>
         </Border>
@@ -141,6 +136,14 @@
                             </StackPanel>
                         </GroupBox>
                     </Grid>
+                    <!-- Action Button Group -->
+                    <GroupBox  Header="SAVE Result" x:Name="Gb_Save">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Margin="5" FontSize="20" x:Name="Btn_Save_Result" Click="Btn_Save_Result_Click" IsEnabled="False">SAVE RESULT</Button>
+                            <TextBlock Margin="5" FontSize="18" x:Name="Tb_Save_Result" Width="635">xxxxx</TextBlock>
+                        </StackPanel>
+                        
+                    </GroupBox>
                 </StackPanel>
 
                 <!-- Detection Group -->
