@@ -10,39 +10,20 @@
         Title="SAW Tray Vision V1.0" Height="1000" Width="1920" Closing="Window_Closing">
 
     <DockPanel LastChildFill="True">
-        <!-- Status Dockpanel-->
-        <!-- Grid DockPanel.Dock="Bottom" Margin="0" Background="#FF9D95CD">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Margin="0" HorizontalAlignment="Left" Content="Ready" FontSize="15" VerticalAlignment="Bottom"/>
-            <Label Grid.Column="5" Margin="0" HorizontalAlignment="Left" Content="Ready" FontSize="15" VerticalAlignment="Bottom"/>
-        </-->
-
         <!-- Control Dockpanel-->
-        <DockPanel DockPanel.Dock="Left">
-            <Button DockPanel.Dock="Bottom"  Margin="5" FontSize="26" VerticalAlignment="Top" x:Name="Btn_About" Content="About" Click="Btn_About_Click" ></Button>
-            <StackPanel DockPanel.Dock="Left" Margin="5">
-                <Button Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" FontSize="26" VerticalAlignment="Top" x:Name="BtnHome" Content="HOME" Click="BtHome_Click" ></Button>
+        <DockPanel DockPanel.Dock="Top">
+            <Button DockPanel.Dock="Right"  Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="Btn_About" Content="About" Click="Btn_About_Click" ></Button>
+            <StackPanel DockPanel.Dock="Left" Margin="0" Orientation="Horizontal">
+                <Button Grid.Row="0" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnHome" Content="HOME" Click="BtHome_Click" ></Button>
                 <!-- Button Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" FontSize="26" VerticalAlignment="Top" x:Name="BtnIO" Content="IO" Click="BtnIO_Click"></-->
-                <Button Grid.Row="2" Grid.Column="0" Margin="0,0,0,5" FontSize="26" VerticalAlignment="Top" x:Name="BtnRecipe" Content="RECIPE" Click="BtnRecipe_Click"></Button>
+                <Button Grid.Row="2" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnRecipe" Content="RECIPE" Click="BtnRecipe_Click"></Button>
             </StackPanel>
         </DockPanel>
-
 
         <!-- Frame_WorkPage Dockpanel-->
         <Grid DockPanel.Dock="Bottom" Margin="0,0,0,0">
             <ScrollViewer HorizontalScrollBarVisibility="Visible" >
-                <Frame Margin="0,0,-10,-10" DockPanel.Dock="Top" x:Name="Frame_WorkPage" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF5B2626" Height="922" Width="1802" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
+                <Frame Margin="0,0,0,0" DockPanel.Dock="Top" x:Name="Frame_WorkPage" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF5B2626" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" MinWidth="1895" Height="928" Width="1894" MinHeight="928"/>
             </ScrollViewer>
         </Grid>
     </DockPanel>

@@ -229,7 +229,7 @@ namespace SAW_TRAY_VISION_V01
             Btn_Result.IsEnabled = false;
 
             //Action
-            Btn_Reset.IsEnabled = false;
+            Btn_Restart.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
             Btn_Save_Result.IsEnabled = false;
@@ -248,7 +248,8 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked               = false; Cb_DO_Red_Light.IsEnabled              = false;
-            Cb_DO_Amber_Light.IsChecked             = false; Cb_DO_Amber_Light.IsEnabled            = false;
+            //Cb_DO_Amber_Light.IsChecked             = false; 
+            //Cb_DO_Amber_Light.IsEnabled            = false;
             Cb_DO_Green_Light.IsChecked             = false; Cb_DO_Green_Light.IsChecked            = false;
             Cb_DO_Buzzer.IsChecked                  = false; Cb_DO_Buzzer.IsEnabled                 = false;
             Cb_DO_Disable_Tray_Loading.IsChecked    = false; Cb_DO_Disable_Tray_Loading.IsEnabled   = false;
@@ -266,7 +267,7 @@ namespace SAW_TRAY_VISION_V01
             Btn_Result.IsEnabled = false;
 
             //Action
-            Btn_Reset.IsEnabled = false;
+            Btn_Restart.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
             Btn_Save_Result.IsEnabled = false;
@@ -288,14 +289,14 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
-            Cb_DO_Amber_Light.IsChecked = true; 
+            //Cb_DO_Amber_Light.IsChecked = true; 
             Cb_DO_Green_Light.IsChecked = false; 
             Cb_DO_Buzzer.IsChecked = false; 
             Cb_DO_Disable_Tray_Loading.IsChecked = false; 
 
 
             Cb_DO_Red_Light.IsEnabled = false;
-            Cb_DO_Amber_Light.IsEnabled = false;
+            //Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
@@ -313,7 +314,7 @@ namespace SAW_TRAY_VISION_V01
             Btn_Result.IsEnabled = true;
 
             //Action
-            Btn_Reset.IsEnabled = false;
+            Btn_Restart.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
             Btn_Save_Result.IsEnabled = true;
@@ -335,14 +336,14 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
-            Cb_DO_Amber_Light.IsChecked = true; 
+            //Cb_DO_Amber_Light.IsChecked = true; 
             Cb_DO_Green_Light.IsChecked = false; 
             Cb_DO_Buzzer.IsChecked = false; 
             Cb_DO_Disable_Tray_Loading.IsChecked = false; 
 
 
             Cb_DO_Red_Light.IsEnabled               = true;
-            Cb_DO_Amber_Light.IsEnabled             = true;
+            //Cb_DO_Amber_Light.IsEnabled             = true;
             Cb_DO_Green_Light.IsEnabled             = true;
             Cb_DO_Buzzer.IsEnabled                  = true;
             Cb_DO_Disable_Tray_Loading.IsEnabled    = true;
@@ -360,7 +361,7 @@ namespace SAW_TRAY_VISION_V01
             Btn_Result.IsEnabled = false;
 
             //Action
-            Btn_Reset.IsEnabled = false;
+            Btn_Restart.IsEnabled = false;
             Btn_BuzzerOff.IsEnabled = false;
 
             Btn_Save_Result.IsEnabled = false;
@@ -382,14 +383,14 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
-            Cb_DO_Amber_Light.IsChecked = false;
+            //Cb_DO_Amber_Light.IsChecked = false;
             Cb_DO_Green_Light.IsChecked = true;
             Cb_DO_Buzzer.IsChecked = false;
             Cb_DO_Disable_Tray_Loading.IsChecked = false;
 
 
             Cb_DO_Red_Light.IsEnabled = false;
-            Cb_DO_Amber_Light.IsEnabled = false;
+            //Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
@@ -401,22 +402,25 @@ namespace SAW_TRAY_VISION_V01
             Btn_Init.IsEnabled = false;
             Btn_Mode_Change.IsEnabled = false;
             Btn_Start.IsEnabled = false;
-            Btn_Stop.IsEnabled = false;
+            Btn_Stop.IsEnabled = true;
             Btn_Capture.IsEnabled = false;
             Btn_Detect.IsEnabled = false;
             Btn_Result.IsEnabled = false;
 
             //Action
-            Btn_Reset.IsEnabled = true;
-            Btn_BuzzerOff.IsEnabled = true;
+            Btn_Restart.IsEnabled = false;
+            Btn_BuzzerOff.IsEnabled = false;
 
-            //Btn_Save_Result.IsEnabled = false;
+            Btn_Save_Result.IsEnabled = false;
 
             //Status
-            Lb_Status.Content = "NO TRAY DETECTED";
+            Lb_Status.Content = "RUNNING";
             Lb_Reslut.Content = "NO TRAY DETECTED";
             Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
 
+            // ComboBox
+            Cb_Camera.IsEnabled = false;
+            Cb_Recipe.IsEnabled = false;
             //Digital Input
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
             Cb_Trigger.IsEnabled = false;
@@ -425,31 +429,33 @@ namespace SAW_TRAY_VISION_V01
             //Cb_Trigger.IsChecked = false; 
 
             //Digital Output
-            Cb_DO_Red_Light.IsChecked = true;
-            Cb_DO_Amber_Light.IsChecked = false;
-            Cb_DO_Green_Light.IsChecked = false;
-            Cb_DO_Buzzer.IsChecked = true;
-            Cb_DO_Disable_Tray_Loading.IsChecked = true;
-            
+            Cb_DO_Red_Light.IsChecked = false;
+            //Cb_DO_Amber_Light.IsChecked = false;
+            Cb_DO_Green_Light.IsChecked = true;
+            Cb_DO_Buzzer.IsChecked = false;
+            Cb_DO_Disable_Tray_Loading.IsChecked = false;
+
+
             Cb_DO_Red_Light.IsEnabled = false;
-            Cb_DO_Amber_Light.IsEnabled = false;
+            //Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
         }
+
         public void StateMachine_WrongTray()
         {
             //State
             Btn_Init.IsEnabled = false;
             Btn_Mode_Change.IsEnabled = false;
             Btn_Start.IsEnabled = false;
-            Btn_Stop.IsEnabled = false;
+            Btn_Stop.IsEnabled = true;
             Btn_Capture.IsEnabled = false;
             Btn_Detect.IsEnabled = false;
             Btn_Result.IsEnabled = false;
             
             //Action
-            Btn_Reset.IsEnabled = true;
+            Btn_Restart.IsEnabled = true;
             Btn_BuzzerOff.IsEnabled = true;
 
             Btn_Save_Result.IsEnabled = true;
@@ -468,14 +474,14 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = true;
-            Cb_DO_Amber_Light.IsChecked = false;
+            ////Cb_DO_Amber_Light.IsChecked = false;
             Cb_DO_Green_Light.IsChecked = false;
             Cb_DO_Buzzer.IsChecked = true;
             Cb_DO_Disable_Tray_Loading.IsChecked = true;
 
 
             Cb_DO_Red_Light.IsEnabled = false;
-            Cb_DO_Amber_Light.IsEnabled = false;
+            ////Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
@@ -555,7 +561,7 @@ namespace SAW_TRAY_VISION_V01
             try
             {
                 modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Red_Light.Value), Convert.ToBoolean(Cb_DO_Red_Light.IsChecked));
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Amber_Light.Value), Convert.ToBoolean(Cb_DO_Amber_Light.IsChecked));
+                //modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Amber_Light.Value), Convert.ToBoolean(//Cb_DO_Amber_Light.IsChecked));
                 modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Green_Light.Value), Convert.ToBoolean(Cb_DO_Green_Light.IsChecked));
                 modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), Convert.ToBoolean(Cb_DO_Buzzer.IsChecked));
                 modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Disable_Tray_Loading.Value), Convert.ToBoolean(Cb_DO_Disable_Tray_Loading.IsChecked));
@@ -600,6 +606,11 @@ namespace SAW_TRAY_VISION_V01
                             StateMachine_WrongTray();
                             Dt_StateMachine.Stop();
                         }
+                        //
+                       // else if (Lb_Reslut.Content.ToString() == "NO TRAY DETECTED")
+                        //{
+                        //    StateMachine_NoTray();
+                        //}
                         break;
                 }
             }
@@ -871,25 +882,55 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Result_Click(object sender, RoutedEventArgs e)
         {
-            if (Final_Result_Flag == "PASS")
+            if (Lb_Status.Content.ToString() == "MANUAL")
             {
-                StateMachine_Running();
-                Lb_Reslut.Content="PASS";
-                Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
+                if (Final_Result_Flag == "PASS")
+                {
+                    //StateMachine_Running();
+                    Lb_Reslut.Content = "PASS";
+                    Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
+                }
+                else if (Final_Result_Flag == "NO_TRAY_DETECTED")
+                {
+                    //StateMachine_NoTray();
+                    //StateMachine_Running();
+                    Lb_Reslut.Content = "NO TRAY DETECTED";
+                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
+                }
+                else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
+                {
+                    //StateMachine_WrongTray();
+                    Lb_Reslut.Content = "WRONG TRAY DETECTED";
+                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
+                }
             }
-            else if(Final_Result_Flag == "NO_TRAY_DETECTED")
+            else
             {
-                StateMachine_NoTray();
+                if (Final_Result_Flag == "PASS")
+                {
+                    StateMachine_Running();
+                    Lb_Reslut.Content = "PASS";
+                    Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
+                }
+                else if (Final_Result_Flag == "NO_TRAY_DETECTED")
+                {
+                    //StateMachine_NoTray();
+                    StateMachine_Running();
+                    Lb_Reslut.Content = "NO TRAY DETECTED";
+                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
+                }
+                else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
+                {
+                    StateMachine_WrongTray();
+                }
             }
-            else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
-            {
-                StateMachine_WrongTray();
-            }
+            
         }
 
-        private void Btn_Reset_Click(object sender, RoutedEventArgs e)
+        private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            StateMachine_Auto();
+            //StateMachine_Auto();
+            StateMachine_Running();
         }
 
         private void Btn_BuzzerOff_Click(object sender, RoutedEventArgs e)
