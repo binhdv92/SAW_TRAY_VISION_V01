@@ -929,8 +929,7 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            //StateMachine_Auto();
-            StateMachine_Running();
+            Btn_Start_Click(null,null);
         }
 
         private void Btn_BuzzerOff_Click(object sender, RoutedEventArgs e)

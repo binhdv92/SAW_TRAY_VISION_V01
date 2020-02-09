@@ -7,7 +7,7 @@
   
   <parameter>
     <name>Modbus_Server_IP</name>
-    <value>172.20.9.201</value>
+    <value>172.19.20.201</value>
   </parameter>
   
   <parameter>
