@@ -8,7 +8,7 @@
         Icon="v.png"
         WindowStartupLocation="CenterScreen"
         Title="SAW Tray Vision V1.0" Height="1000" Width="1920" Closing="Window_Closing">
-
+    <Viewbox>
     <DockPanel LastChildFill="True">
         <!-- Control Dockpanel-->
         <DockPanel DockPanel.Dock="Top">
@@ -27,4 +27,5 @@
             </ScrollViewer>
         </Grid>
     </DockPanel>
+    </Viewbox>
 </Window>
