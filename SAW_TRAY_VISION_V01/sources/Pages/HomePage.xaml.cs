@@ -524,6 +524,7 @@ namespace SAW_TRAY_VISION_V01
             //
             this.DataContext = this;
             GetVideoDevices();
+
         }
         #endregion
 
@@ -618,12 +619,23 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Init_Click(object sender, RoutedEventArgs e)
         {
+            // Yolov3 process
+            yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
+            //var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
+            //Dg_Debug.ItemsSource = Items_Temp;
+
             try // ---Modbus Server Setup
             {
                 modbusClient = new ModbusClient(Paras.Modbus_Server_IP.Value, int.Parse(Paras.Modbus_Server_Port.Value));
                 modbusClient.LogFileFilename = Paras.Modbus_Server_LogFileFilename.Value;
                 modbusClient.Connect();
                 Dt_Modbus.Start();
+
+                string TempStr = Paras.LoadAllParameters();
+                if (TempStr == "ERROR")
+                {
+                    MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
+                }
 
                 try
                 {
@@ -712,7 +724,7 @@ namespace SAW_TRAY_VISION_V01
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
             // Yolov3 process
-            yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
+            //yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
             var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
             Dg_Debug.ItemsSource = Items_Temp;
 

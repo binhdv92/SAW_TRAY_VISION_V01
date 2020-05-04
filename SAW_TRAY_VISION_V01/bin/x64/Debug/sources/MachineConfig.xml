@@ -7,7 +7,7 @@
   
   <parameter>
     <name>Modbus_Server_IP</name>
-    <value>10.179.184.178</value>
+    <value>172.20.9.201</value>
   </parameter>
   
   <parameter>
@@ -47,22 +47,22 @@
   
   <parameter>
     <name>DO_Amber_Light</name>
-    <value>1</value>
+    <value>5</value>
   </parameter>
   
   <parameter>
     <name>DO_Green_Light</name>
-    <value>2</value>
+    <value>1</value>
   </parameter>
   
   <parameter>
     <name>DO_Buzzer</name>
-    <value>3</value>
+    <value>2</value>
   </parameter>
   
   <parameter>
     <name>DO_Disable_Tray_Loading</name>
-    <value>4</value>
+    <value>3</value>
   </parameter>
   
   <parameter>
