@@ -46,3 +46,6 @@ SAW TRAY VISION V01 PROJECT
 | GPU | NVIDIA Quadro K1100M with 2 GB dedicated GDDR5 video memory |
 | Monitor | 1920 x 1080 |
 | Result | 5 - 10 second per frame |
+
+## Modbus IP Address:
+172.20.9.201
