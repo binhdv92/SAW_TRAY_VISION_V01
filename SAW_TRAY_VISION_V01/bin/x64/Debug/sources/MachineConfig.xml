@@ -67,7 +67,7 @@
   
   <parameter>
     <name>Threshold_Trigger</name>
-    <value>10</value>
+    <value>7</value>
   </parameter>
   
   <parameter>

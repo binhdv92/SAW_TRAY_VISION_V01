@@ -607,11 +607,11 @@ namespace SAW_TRAY_VISION_V01
                             StateMachine_WrongTray();
                             Dt_StateMachine.Stop();
                         }
-                        //
-                       // else if (Lb_Reslut.Content.ToString() == "NO TRAY DETECTED")
-                        //{
-                        //    StateMachine_NoTray();
-                        //}
+                        
+                        else if (Lb_Reslut.Content.ToString() == "NO TRAY DETECTED") {                         
+                            //StateMachine_NoTray();
+                            StateMachine_Flag = "RUNNING";
+                        }
                         break;
                 }
             }
@@ -941,7 +941,11 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
-            Btn_Start_Click(null,null);
+            //Btn_Start_Click(null,null);
+            StateMachine_Running();
+            Dt_StateMachine.Start();
+            StateMachine_Flag = "RUNNING";
+            Threshold_Counter = 0;
         }
 
         private void Btn_BuzzerOff_Click(object sender, RoutedEventArgs e)
