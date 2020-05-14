@@ -23,7 +23,7 @@
         <!-- Frame_WorkPage Dockpanel-->
         <Grid DockPanel.Dock="Bottom" Margin="0,0,0,0">
             <ScrollViewer HorizontalScrollBarVisibility="Visible" >
-                <Frame Margin="0,0,0,0" DockPanel.Dock="Top" x:Name="Frame_WorkPage" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF5B2626" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" MinWidth="1895" Height="928" Width="1894" MinHeight="928"/>
+                <Frame Margin="0,0,0,0" DockPanel.Dock="Top" x:Name="Frame_WorkPage" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFF0F7D9" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" MinWidth="1895" Height="928" Width="1894" MinHeight="928"/>
             </ScrollViewer>
         </Grid>
     </DockPanel>

@@ -17,7 +17,7 @@ namespace SAW_TRAY_VISION_V01
     /// <summary>
     /// Interaction logic for Window_About.xaml
     /// </summary>
-    public partial class Window_About : Window
+    public partial class Window_About : Page
     {
         public Window_About()
         {

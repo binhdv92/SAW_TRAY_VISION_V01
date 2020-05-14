@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Configuration;
-using SAW_TRAY_VISION_V01.sources;
+//using SAW_TRAY_VISION_V01.sources;
 
 namespace SAW_TRAY_VISION_V01
 {
@@ -24,21 +24,13 @@ namespace SAW_TRAY_VISION_V01
     {
         public HomePage    FWP  = new HomePage();
         public Recipe_Page RWP  = new Recipe_Page();
-        public Window_About WA;
-
-
+        public Window_About WA = new Window_About();
 
         public MainWindow()
         {
             InitializeComponent();
             Frame_WorkPage.Content = this.FWP;
         }
-
-        //private void BtnIO_Click(object sender, RoutedEventArgs e)
-        //{
-        //    WindowIO WIO = new WindowIO();
-        //    WIO.Show();
-        //}
 
         private void BtHome_Click(object sender, RoutedEventArgs e)
         {
@@ -53,26 +45,17 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_About_Click(object sender, RoutedEventArgs e)
         {
-            WA = new Window_About();
-            WA.Show();
+            Frame_WorkPage.Content = WA;
         }
-
-        //private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        //{
-        //this.Close();
-        //} 
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            
             FWP.StopCamera();
-            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             FWP.StopCamera();
-            WA.Close();
         }
     }
 }

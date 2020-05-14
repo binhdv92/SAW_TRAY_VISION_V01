@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using EasyModbus;
 using System.Windows.Threading;
 using System.Configuration;
-using SAW_TRAY_VISION_V01.sources;
+//using SAW_TRAY_VISION_V01.sources;
 
 namespace SAW_TRAY_VISION_V01
 {

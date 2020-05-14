@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace SAW_TRAY_VISION_V01.sources
+namespace SAW_TRAY_VISION_V01
 {
     class ProductsList
     {

@@ -27,7 +27,7 @@ using System.IO;
 using Alturos.Yolo;
 using EasyModbus;
 using System.Windows.Threading;
-using SAW_TRAY_VISION_V01.sources;
+//using SAW_TRAY_VISION_V01.sources;
 using AForge.Wpf;
 
 namespace SAW_TRAY_VISION_V01
@@ -474,6 +474,8 @@ namespace SAW_TRAY_VISION_V01
             CurrentDevice = VideoDevices[0];
             Cb_Camera.SelectedIndex = 0;
             StartCamera();
+
+
             //Initial Random string
             // ---Create a Output_File_Name Randomly.
             Output_File_Name = _randomGenerator.Random_Output_File_Name();
@@ -485,6 +487,11 @@ namespace SAW_TRAY_VISION_V01
                 MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
             }
             Lb_Threshold.Content = Paras.Threshold_Trigger.Value;
+
+            //
+            //
+            yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
+
             //
             Products.LoadProductLists_Str();
             TrayIDList = Products._ProductLists_Str;
@@ -873,7 +880,7 @@ namespace SAW_TRAY_VISION_V01
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
             // Yolov3 process
-            yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
+            // yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
             var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
             Dg_Debug.ItemsSource = Items_Temp;
 
