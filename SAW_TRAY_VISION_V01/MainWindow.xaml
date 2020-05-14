@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SAW_TRAY_VISION_V01"
         mc:Ignorable="d"
-        Icon="v.png"
+        Icon="v4.png"
         WindowStartupLocation="CenterScreen"
-        Title="SAW Tray Vision V1.0" Height="1000" Width="1920" Closing="Window_Closing">
+        Title="JEDEC TRAY ID READER V1.1 (Powered by binhdv92)" Height="1000" Width="1920" Closed="Window_Closed" Closing="Window_Closing">
     <Viewbox>
     <DockPanel LastChildFill="True">
         <!-- Control Dockpanel-->

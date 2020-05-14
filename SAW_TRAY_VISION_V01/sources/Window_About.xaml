@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SAW_TRAY_VISION_V01"
         mc:Ignorable="d"
-        Title="About: SAW Tray Vision" Height="300" Width="300">
+        Title="About: SAW Tray Vision" Height="390" Width="460">
     <Grid>
-        <TextBlock Margin="10"><Run Text="SAW Tray Vision Suite"/><LineBreak/><Run Text="Version: 1.0"/><LineBreak/><Run Text="Author: Duong, Van Binh"/><LineBreak/><Run Text="Email: van.binh.duong@intel.com"/><LineBreak/><Run Text="Copyright 2020 Intel Products Vietnam Co., Ltd"/><LineBreak/><Run Text="**********"/><LineBreak/><Run Text="Thanks the contribution by:"/><LineBreak/><Run Text="Nguyen, Sy Hung"/><LineBreak/><Run Text="Tran, Phong Thach"/><LineBreak/><Run Text="Truong, Quang Trong"/><LineBreak/><Run Text="Le, Van Cung"/><LineBreak/><Run Text="Luong, Xuan Dong"/></TextBlock>
+        <StackPanel Margin="10">
+            <Image Source="icon_ai.png" Height="100" Margin="10"></Image>
+            <TextBlock Margin="10" TextAlignment="Center" Height="207"><Run Text="JEDEC TRAY ID READER"/><LineBreak/><Run Text="Version: 1.1"/><LineBreak/><Run Text="Author: Duong, Van Binh"/><LineBreak/><Run Text="Email: van.binh.duong@intel.com"/><LineBreak/><Run Text="Copyright 2020 Intel Products Vietnam Co., Ltd"/><LineBreak/><Run Text="**********"/><LineBreak/><Run Text="Thanks the contribution by:"/><LineBreak/><Run Text="Tran, Phong Thach"/><LineBreak/><Run Text="Le, Van Cung"/><LineBreak/><Run Text="Luong, Xuan Dong"/><LineBreak/><Run Text="Nguyen, Sy Hung"/><LineBreak/><Run Text="SAW Team"/></TextBlock>
+        </StackPanel>
+
     </Grid>
 </Window>

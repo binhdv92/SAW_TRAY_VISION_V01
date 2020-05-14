@@ -139,6 +139,9 @@ namespace SAW_TRAY_VISION_V01
         DispatcherTimer Dt_StateMachine = new DispatcherTimer();
         float Threshold_Counter = 0;
         public string StateMachine_Flag;
+        public bool flag_init;
+        public bool flag_init_Camera;
+        public bool flag_init_Modbus;
         public bool Capture_Flag=false;
         public string[] TrayIDList { get; set; }
         public DetectionResult result;
@@ -219,9 +222,11 @@ namespace SAW_TRAY_VISION_V01
         #region StateMachine Functions
         public void StateMachine_NotInit()
         {
+            Lb_Status.Content = "NOT INIT";
+            Lb_Reslut.Content = "---";
+            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
             //State
             Btn_Init.IsEnabled = true;
-            Btn_Mode_Change.IsEnabled = false;
             Btn_Start.IsEnabled = false;
             Btn_Stop.IsEnabled = false;
             Btn_Capture.IsEnabled = false;
@@ -234,10 +239,7 @@ namespace SAW_TRAY_VISION_V01
 
             Btn_Save_Result.IsEnabled = false;
 
-            //Status
-            Lb_Status.Content = "Not Initialization";
-            Lb_Reslut.Content = "---";
-            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+
             // ComboBox
             Cb_Camera.IsEnabled = true;
             Cb_Recipe.IsEnabled = true;
@@ -254,33 +256,35 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Buzzer.IsChecked                  = false; Cb_DO_Buzzer.IsEnabled                 = false;
             Cb_DO_Disable_Tray_Loading.IsChecked    = false; Cb_DO_Disable_Tray_Loading.IsEnabled   = false;
         }
-
-        public void StateMachine_Auto()
+        public void StateMachine_Running()
         {
-            //State
+            Lb_Status.Content = "RUNNING";
+            // --------------------Button
+            Btn_Mode.IsEnabled = false;
+            //Btn_Auto.IsEnabled = false;
+            //Btn_Dry.IsEnabled = false;
+            //Btn_Manual.IsEnabled = false;
+
             Btn_Init.IsEnabled = false;
-            Btn_Mode_Change.IsEnabled = true;
-            Btn_Start.IsEnabled = true;
-            Btn_Stop.IsEnabled = false;
+            Btn_Start.IsEnabled = false;
+            Btn_Stop.IsEnabled = true;
+            Btn_Restart.IsEnabled = false;
+
+            Btn_BuzzerOff.IsEnabled = false;
             Btn_Capture.IsEnabled = false;
             Btn_Detect.IsEnabled = false;
             Btn_Result.IsEnabled = false;
 
-            //Action
-            Btn_Restart.IsEnabled = false;
-            Btn_BuzzerOff.IsEnabled = false;
-
             Btn_Save_Result.IsEnabled = false;
 
-            //Status
-            Lb_Status.Content = "AUTO";
-            Lb_Reslut.Content = "---";
-            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
-            // ComboBox
-            Cb_Camera.IsEnabled = true;
-            Cb_Recipe.IsEnabled = true;
+            // --------------------------------------Label
+            //Lb_Status.Content = "RUNNING";
+            //Lb_Reslut.Content = "---";
+            //Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
 
-            //Digital Input
+            Cb_Camera.IsEnabled = false;
+            Cb_Recipe.IsEnabled = false;
+            //-----------------------------------Digital Input
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
             Cb_Trigger.IsEnabled = false;
 
@@ -289,92 +293,46 @@ namespace SAW_TRAY_VISION_V01
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
-            //Cb_DO_Amber_Light.IsChecked = true; 
-            Cb_DO_Green_Light.IsChecked = false; 
-            Cb_DO_Buzzer.IsChecked = false; 
-            Cb_DO_Disable_Tray_Loading.IsChecked = false; 
+            //Cb_DO_Amber_Light.IsChecked = false;
+            Cb_DO_Green_Light.IsChecked = true;
+            Cb_DO_Buzzer.IsChecked = false;
+            Cb_DO_Disable_Tray_Loading.IsChecked = false;
 
 
             Cb_DO_Red_Light.IsEnabled = false;
             //Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
-            Cb_DO_Disable_Tray_Loading.IsEnabled = false;
         }
-
-        public void StateMachine_Manual()
+        public void StateMachine_Idle()
         {
-            //State
-            Btn_Init.IsEnabled = false;
-            Btn_Mode_Change.IsEnabled = true;
-            Btn_Start.IsEnabled = false;
+            Lb_Status.Content = "IDLE";
+            // --------------------Button
+            Btn_Mode.IsEnabled = true;
+            //Btn_Auto.IsEnabled = true;
+            //Btn_Dry.IsEnabled = true;
+            //Btn_Manual.IsEnabled = true;
+
+            Btn_Init.IsEnabled = true;
+            Btn_Start.IsEnabled = true;
             Btn_Stop.IsEnabled = false;
-            Btn_Capture.IsEnabled = true;
-            Btn_Detect.IsEnabled = true;
-            Btn_Result.IsEnabled = true;
-
-            //Action
             Btn_Restart.IsEnabled = false;
+
             Btn_BuzzerOff.IsEnabled = false;
-
-            Btn_Save_Result.IsEnabled = true;
-
-            //Status
-            Lb_Status.Content = "MANUAL";
-            Lb_Reslut.Content = "---";
-            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
-            // ComboBox
-            Cb_Camera.IsEnabled = true;
-            Cb_Recipe.IsEnabled = true;
-
-            //Digital Input
-            Cb_DI_Tray_Present_Sensor.IsEnabled = false;
-            Cb_Trigger.IsEnabled = false;
-
-            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
-            //Cb_Trigger.IsChecked = false; 
-
-            //Digital Output
-            Cb_DO_Red_Light.IsChecked = false;
-            //Cb_DO_Amber_Light.IsChecked = true; 
-            Cb_DO_Green_Light.IsChecked = false; 
-            Cb_DO_Buzzer.IsChecked = false; 
-            Cb_DO_Disable_Tray_Loading.IsChecked = false; 
-
-
-            Cb_DO_Red_Light.IsEnabled               = true;
-            //Cb_DO_Amber_Light.IsEnabled             = true;
-            Cb_DO_Green_Light.IsEnabled             = true;
-            Cb_DO_Buzzer.IsEnabled                  = true;
-            Cb_DO_Disable_Tray_Loading.IsEnabled    = true;
-        }
-
-        public void StateMachine_Running()
-        {
-            //State
-            Btn_Init.IsEnabled = false;
-            Btn_Mode_Change.IsEnabled = false;
-            Btn_Start.IsEnabled = false;
-            Btn_Stop.IsEnabled = true;
             Btn_Capture.IsEnabled = false;
             Btn_Detect.IsEnabled = false;
             Btn_Result.IsEnabled = false;
 
-            //Action
-            Btn_Restart.IsEnabled = false;
-            Btn_BuzzerOff.IsEnabled = false;
-
             Btn_Save_Result.IsEnabled = false;
 
-            //Status
-            Lb_Status.Content = "RUNNING";
+            // --------------------------------------Label
+            //Lb_Status.Content = "RUNNING";
             //Lb_Reslut.Content = "---";
             //Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
 
-            // ComboBox
-            Cb_Camera.IsEnabled = false;
-            Cb_Recipe.IsEnabled = false;
-            //Digital Input
+            Cb_Camera.IsEnabled = true;
+            Cb_Recipe.IsEnabled = true;
+            //-----------------------------------Digital Input
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
             Cb_Trigger.IsEnabled = false;
 
@@ -395,12 +353,10 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
         }
-
         public void StateMachine_NoTray()
         {
             //State
             Btn_Init.IsEnabled = false;
-            Btn_Mode_Change.IsEnabled = false;
             Btn_Start.IsEnabled = false;
             Btn_Stop.IsEnabled = true;
             Btn_Capture.IsEnabled = false;
@@ -414,7 +370,7 @@ namespace SAW_TRAY_VISION_V01
             Btn_Save_Result.IsEnabled = false;
 
             //Status
-            Lb_Status.Content = "RUNNING";
+            //Lb_Status.Content = "RUNNING";
             Lb_Reslut.Content = "NO TRAY DETECTED";
             Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
 
@@ -442,12 +398,10 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Buzzer.IsEnabled = false;
             Cb_DO_Disable_Tray_Loading.IsEnabled = false;
         }
-
         public void StateMachine_WrongTray()
         {
             //State
             Btn_Init.IsEnabled = false;
-            Btn_Mode_Change.IsEnabled = false;
             Btn_Start.IsEnabled = false;
             Btn_Stop.IsEnabled = true;
             Btn_Capture.IsEnabled = false;
@@ -459,11 +413,15 @@ namespace SAW_TRAY_VISION_V01
             Btn_BuzzerOff.IsEnabled = true;
 
             Btn_Save_Result.IsEnabled = true;
+            
+            // ComboBox
+            Cb_Camera.IsEnabled = true;
+            Cb_Recipe.IsEnabled = true;
 
             //Status
             Lb_Status.Content = "WRONG TRAY";
-            Lb_Reslut.Content = "WRONG TRAY";
-            Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
+            //Lb_Reslut.Content = "WRONG TRAY";
+            //Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
 
             //Digital Input
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
@@ -477,14 +435,33 @@ namespace SAW_TRAY_VISION_V01
             ////Cb_DO_Amber_Light.IsChecked = false;
             Cb_DO_Green_Light.IsChecked = false;
             Cb_DO_Buzzer.IsChecked = true;
-            Cb_DO_Disable_Tray_Loading.IsChecked = true;
+            //Cb_DO_Disable_Tray_Loading.IsChecked = true;
 
 
             Cb_DO_Red_Light.IsEnabled = false;
             ////Cb_DO_Amber_Light.IsEnabled = false;
             Cb_DO_Green_Light.IsEnabled = false;
             Cb_DO_Buzzer.IsEnabled = false;
-            Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+
+            if(Lb_Mode.Content.ToString() == "AUTO")
+            {
+                Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+                Cb_DO_Disable_Tray_Loading.IsChecked = true;
+            }
+            else if(Lb_Mode.Content.ToString() == "DRY")
+            {
+                Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+                Cb_DO_Disable_Tray_Loading.IsChecked = false;
+            }
+            else if (Lb_Mode.Content.ToString() == "MANUAL")
+            {
+                Cb_DO_Disable_Tray_Loading.IsEnabled = true;
+                Cb_DO_Disable_Tray_Loading.IsChecked = false;
+            }
+            else
+            {
+
+            }
         }
         #endregion
 
@@ -492,10 +469,14 @@ namespace SAW_TRAY_VISION_V01
         public HomePage()
         {
             InitializeComponent();
-
+            StateMachine_NotInit();
+            GetVideoDevices();
+            CurrentDevice = VideoDevices[0];
+            Cb_Camera.SelectedIndex = 0;
+            StartCamera();
             //Initial Random string
             // ---Create a Output_File_Name Randomly.
-            Output_File_Name= _randomGenerator.Random_Output_File_Name();
+            Output_File_Name = _randomGenerator.Random_Output_File_Name();
             Tb_Save_Result.Text = Output_File_Name[0];
 
             //
@@ -503,14 +484,15 @@ namespace SAW_TRAY_VISION_V01
             if (TempStr == "ERROR"){
                 MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
             }
-
+            Lb_Threshold.Content = Paras.Threshold_Trigger.Value;
             //
             Products.LoadProductLists_Str();
             TrayIDList = Products._ProductLists_Str;
             Cb_Recipe.SelectedIndex = 2;
-            
+
             //
-            StateMachine_NotInit();
+            Btn_Auto_Click(null, null);
+
 
             //
             Dt_Modbus.Interval = TimeSpan.FromMilliseconds(int.Parse(Paras.Timer_Interval_Modbus.Value));
@@ -523,7 +505,7 @@ namespace SAW_TRAY_VISION_V01
             Dt_StateMachine.Stop();
             //
             this.DataContext = this;
-            GetVideoDevices();
+
         }
         #endregion
 
@@ -540,6 +522,7 @@ namespace SAW_TRAY_VISION_V01
                     if(Threshold_Counter <= float.Parse(Paras.Threshold_Trigger.Value))
                     {
                         Threshold_Counter++;
+                        //Capture_Flag = true;
                     }
                 }
                 else
@@ -576,106 +559,284 @@ namespace SAW_TRAY_VISION_V01
 
         private void Dt_StateMachineTicker(object sender, EventArgs e)
         {
-            if (Lb_Status.Content.ToString() == "RUNNING")
+            if (Lb_Mode.Content.ToString() == "AUTO" || Lb_Mode.Content.ToString() == "DRY")
             {
                 switch (StateMachine_Flag)
                 {
                     case "RUNNING":
+                        Lb_Status.Content = "RUNNING";
                         StateMachine_Running();
                         if (Threshold_Counter == float.Parse(Paras.Threshold_Trigger.Value))
                         {
                             StateMachine_Flag = "CAPTURE";
                         }
                         break;
+
                     case "CAPTURE":
+                        Lb_Status.Content = "CAPTURE";
                         Btn_Capture_Click(null, null);
                         StateMachine_Flag = "DETECT";
+                        //Threshold_Counter = 0;
                         break;
+
                     case "DETECT":
+                        Lb_Status.Content = "DETECT";
                         Btn_Detect_Click(null, null);
-                        StateMachine_Flag = "RESULT";
+                        if (Lb_Mode.Content.ToString() == "AUTO")
+                        {
+                            StateMachine_Flag = "MAKE DECISION";
+                        }
+                        else if(Lb_Mode.Content.ToString() == "DRY")
+                        {
+                            StateMachine_Flag = "RUNNING";
+                        }
                         break;
-                    case "RESULT":
-                        Btn_Result_Click(null, null);
+
+                    case "MAKE DECISION":
+
+                        Lb_Status.Content = "MAKE DECISION";
                         if (Lb_Reslut.Content.ToString() == "PASS")
                         {
+                            StateMachine_Running();
+                            StateMachine_Flag = "RUNNING";
+                        }
+                        else if (Lb_Reslut.Content.ToString() == "NO TRAY")
+                        {
+                            StateMachine_Running();
                             StateMachine_Flag = "RUNNING";
                         }
                         else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
                         {
                             StateMachine_WrongTray();
+
                             Dt_StateMachine.Stop();
+
                         }
-                        //
-                       // else if (Lb_Reslut.Content.ToString() == "NO TRAY DETECTED")
-                        //{
-                        //    StateMachine_NoTray();
-                        //}
                         break;
                 }
             }
         }
+        
+        private void Btn_Auto_Click(object sender, RoutedEventArgs e)
+        {
+            Lb_Mode.Content = "AUTO";
+            //State
+            Btn_Init.IsEnabled = true;
+            Btn_Start.IsEnabled = true;
+            Btn_Stop.IsEnabled = false;
+            Btn_Capture.IsEnabled = false;
+            Btn_Detect.IsEnabled = false;
+            Btn_Result.IsEnabled = false;
+
+            //Action
+            Btn_Restart.IsEnabled = false;
+            Btn_BuzzerOff.IsEnabled = false;
+
+            Btn_Save_Result.IsEnabled = false;
+
+            //Status
+            Lb_Reslut.Content = "---";
+            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+            // ComboBox
+            Cb_Camera.IsEnabled = true;
+            Cb_Recipe.IsEnabled = true;
+
+            //Digital Input
+            Cb_DI_Tray_Present_Sensor.IsEnabled = false;
+            Cb_Trigger.IsEnabled = false;
+
+            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
+            //Cb_Trigger.IsChecked = false; 
+
+            //Digital Output
+            Cb_DO_Red_Light.IsChecked = false;
+            //Cb_DO_Amber_Light.IsChecked = true; 
+            Cb_DO_Green_Light.IsChecked = false;
+            Cb_DO_Buzzer.IsChecked = false;
+            Cb_DO_Disable_Tray_Loading.IsChecked = false;
+
+
+            Cb_DO_Red_Light.IsEnabled = false;
+            //Cb_DO_Amber_Light.IsEnabled = false;
+            Cb_DO_Green_Light.IsEnabled = false;
+            Cb_DO_Buzzer.IsEnabled = false;
+            Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+        }
+        private void Btn_Dry_Click(object sender, RoutedEventArgs e)
+        {
+            Lb_Mode.Content = "DRY";
+            //State
+            Btn_Init.IsEnabled = true;
+            Btn_Start.IsEnabled = true;
+            Btn_Stop.IsEnabled = false;
+            Btn_Capture.IsEnabled = false;
+            Btn_Detect.IsEnabled = false;
+            Btn_Result.IsEnabled = false;
+
+            //Action
+            Btn_Restart.IsEnabled = false;
+            Btn_BuzzerOff.IsEnabled = false;
+
+            Btn_Save_Result.IsEnabled = false;
+
+            //Status
+            //Lb_Status.Content = "---";
+            Lb_Reslut.Content = "---";
+            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+            // ComboBox
+            Cb_Camera.IsEnabled = true;
+            Cb_Recipe.IsEnabled = true;
+
+            //Digital Input
+            Cb_DI_Tray_Present_Sensor.IsEnabled = false;
+            Cb_Trigger.IsEnabled = false;
+
+            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
+            //Cb_Trigger.IsChecked = false; 
+
+            //Digital Output
+            Cb_DO_Red_Light.IsChecked = false;
+            //Cb_DO_Amber_Light.IsChecked = true; 
+            Cb_DO_Green_Light.IsChecked = false;
+            Cb_DO_Buzzer.IsChecked = false;
+            Cb_DO_Disable_Tray_Loading.IsChecked = false;
+
+
+            Cb_DO_Red_Light.IsEnabled = false;
+            //Cb_DO_Amber_Light.IsEnabled = false;
+            Cb_DO_Green_Light.IsEnabled = false;
+            Cb_DO_Buzzer.IsEnabled = false;
+            Cb_DO_Disable_Tray_Loading.IsEnabled = false;
+        }
+         
+        private void Btn_Manual_Click(object sender, RoutedEventArgs e)
+        {
+            Lb_Mode.Content = "MANUAL";
+            //State
+            Btn_Init.IsEnabled = true;
+            Btn_Start.IsEnabled = false;
+            Btn_Stop.IsEnabled = false;
+            Btn_Capture.IsEnabled = true;
+            Btn_Detect.IsEnabled = true;
+            Btn_Result.IsEnabled = true;
+
+            //Action
+            Btn_Restart.IsEnabled = false;
+            Btn_BuzzerOff.IsEnabled = true;
+
+            Btn_Save_Result.IsEnabled = true;
+
+            //Status
+            //Lb_Status.Content = "MANUAL";
+            Lb_Reslut.Content = "---";
+            Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+            // ComboBox
+            Cb_Camera.IsEnabled = true;
+            Cb_Recipe.IsEnabled = true;
+
+            //Digital Input
+            Cb_DI_Tray_Present_Sensor.IsEnabled = false;
+            Cb_Trigger.IsEnabled = false;
+
+            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
+            //Cb_Trigger.IsChecked = false; 
+
+            //Digital Output
+            Cb_DO_Red_Light.IsChecked = false;
+            //Cb_DO_Amber_Light.IsChecked = true; 
+            Cb_DO_Green_Light.IsChecked = false;
+            Cb_DO_Buzzer.IsChecked = false;
+            Cb_DO_Disable_Tray_Loading.IsChecked = false;
+
+
+            Cb_DO_Red_Light.IsEnabled = true;
+            //Cb_DO_Amber_Light.IsEnabled             = true;
+            Cb_DO_Green_Light.IsEnabled = true;
+            Cb_DO_Buzzer.IsEnabled = true;
+            Cb_DO_Disable_Tray_Loading.IsEnabled = true;
+        }
 
         private void Btn_Init_Click(object sender, RoutedEventArgs e)
         {
+                StopCamera();
+                try // Init Camera
+                {
+                    //if (Lb_Status_Camera.Content.ToString() != "Good")
+                    //{
+                    //GetVideoDevices();
+                    //StartCamera_02(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
+                        StartCamera_02();
+                        //flag_init_Camera = true;
+                        Lb_Status_Camera.Content = "Good";
+                    //}
+                }
+                catch
+                {
+                    MessageBox.Show("Error103: Failt to start Camera");
+                    StopCamera();
+                    //StateMachine_NotInit();
+                    //flag_init_Camera = false;
+                    Lb_Status_Camera.Content = "Fail";
+                }
+            
+            
+
             try // ---Modbus Server Setup
             {
                 modbusClient = new ModbusClient(Paras.Modbus_Server_IP.Value, int.Parse(Paras.Modbus_Server_Port.Value));
                 modbusClient.LogFileFilename = Paras.Modbus_Server_LogFileFilename.Value;
                 modbusClient.Connect();
                 Dt_Modbus.Start();
-
-                try
-                {
-                    StartCamera(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
-                    StateMachine_Auto();
-                }
-                catch
-                {
-                    MessageBox.Show("Error103: Failt to start Camera");
-                    StopCamera();
-                    StateMachine_NotInit();
-                }
+                //flag_init_Modbus = true;
+                Lb_Status_Modbus.Content = "Good";
             }
             catch
             {
                 MessageBox.Show("Error102: Fail to connect to the Modbus Server at the address " + Paras.Modbus_Server_IP.Value + ":" + Paras.Modbus_Server_Port.Value);
-                StateMachine_NotInit();
+                //StateMachine_NotInit();
+                //flag_init_Modbus = false;
+                Lb_Status_Modbus.Content = "Fail";
             }
-        }
 
-        private void Btn_Mode_Change_Click(object sender, RoutedEventArgs e)
-        {
-            if (Lb_Status.Content.ToString() == "IDLE")
+
+            if(Lb_Status_Camera.Content.ToString() == "Good" & Lb_Status_Modbus.Content.ToString() == "Good")
             {
-                Lb_Status.Content = "AUTO";
-                StateMachine_Auto();
+                flag_init = true;
+                Lb_Status_Global.Content = "Good";
             }
-            else if (Lb_Status.Content.ToString() == "AUTO")
+            else
             {
-                Lb_Status.Content = "MANUAL";
-                StateMachine_Manual();
-            }
-            else if (Lb_Status.Content.ToString() == "MANUAL")
-            {
-                Lb_Status.Content = "AUTO";
-                StateMachine_Auto();
+                flag_init = false;
+                Lb_Status_Global.Content= "Fail";
             }
         }
 
         private void Btn_Start_Click(object sender, RoutedEventArgs e)
         {
+            if(Lb_Status_Global.Content.ToString() != "Good")
+            {
+                MessageBox.Show("Error1010: Tool is not yet INIT, please do INIT to continue");
+            }
+            else
+            {
+                StateMachine_Flag = "RUNNING";
+                StateMachine_Running();
+                Dt_StateMachine.Start();
 
-            StateMachine_Running();
-            Dt_StateMachine.Start();
-            StateMachine_Flag = "RUNNING";
-            Threshold_Counter = 0;
+                Threshold_Counter = 0;
+                Cb_Camera.IsEnabled = false;
+            }
         }
-
+        private void Btn_Restart_Click(object sender, RoutedEventArgs e)
+        {
+            Btn_Start_Click(null, null);
+        }
         private void Btn_Stop_Click(object sender, RoutedEventArgs e)
         {
-            StateMachine_Auto();
+            StateMachine_Idle();
             Dt_StateMachine.Stop();
+
+            Cb_Camera.IsEnabled = true;
         }
 
         private void Btn_Capture_Click(object sender, RoutedEventArgs e)
@@ -866,70 +1027,48 @@ namespace SAW_TRAY_VISION_V01
             //
             if (Pass_FLAG == 0 && Fail_FLAG == 0)
             {
-                Final_Result_Flag = "NO_TRAY_DETECTED";
+                //Final_Result_Flag = "NO TRAY";
+                Lb_Reslut.Content = "NO TRAY";
+                Lb_Reslut.Background = System.Windows.Media.Brushes.Orange;
             }
             else if(Fail_FLAG > 0)
             {
-                Final_Result_Flag = "WRONG_TRAY_DETECTED";
+                //Final_Result_Flag = "WRONG TRAY";
+                Lb_Reslut.Content = "WRONG TRAY";
+                Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
             }
             else if (Pass_FLAG>0 && Fail_FLAG == 0)
             {
-                Final_Result_Flag = "PASS";
+                //Final_Result_Flag = "PASS";
+                Lb_Reslut.Content = "PASS";
+                Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
             }
             #endregion
             Dg_TrayID.ItemsSource = tray_ID_list;
         }
 
+        
         private void Btn_Result_Click(object sender, RoutedEventArgs e)
         {
-            if (Lb_Status.Content.ToString() == "MANUAL")
-            {
-                if (Final_Result_Flag == "PASS")
-                {
-                    //StateMachine_Running();
-                    Lb_Reslut.Content = "PASS";
-                    Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
-                }
-                else if (Final_Result_Flag == "NO_TRAY_DETECTED")
-                {
-                    //StateMachine_NoTray();
-                    //StateMachine_Running();
-                    Lb_Reslut.Content = "NO TRAY DETECTED";
-                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
-                }
-                else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
-                {
-                    //StateMachine_WrongTray();
-                    Lb_Reslut.Content = "WRONG TRAY DETECTED";
-                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
-                }
-            }
-            else
-            {
-                if (Final_Result_Flag == "PASS")
-                {
-                    StateMachine_Running();
-                    Lb_Reslut.Content = "PASS";
-                    Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
-                }
-                else if (Final_Result_Flag == "NO_TRAY_DETECTED")
-                {
-                    //StateMachine_NoTray();
-                    StateMachine_Running();
-                    Lb_Reslut.Content = "NO TRAY DETECTED";
-                    Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
-                }
-                else if (Final_Result_Flag == "WRONG_TRAY_DETECTED")
-                {
-                    StateMachine_WrongTray();
-                }
-            }
-            
-        }
 
-        private void Btn_Restart_Click(object sender, RoutedEventArgs e)
-        {
-            Btn_Start_Click(null,null);
+
+            if (Lb_Reslut.Content.ToString() == "PASS")
+            {
+                StateMachine_Running();
+                StateMachine_Flag = "RUNNING";
+            }
+            else if (Lb_Reslut.Content.ToString() == "NO TRAY")
+            {
+                StateMachine_Running();
+                StateMachine_Flag = "RUNNING";
+            }
+            else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
+            {
+                StateMachine_WrongTray();
+
+                Dt_StateMachine.Stop();
+
+            }
         }
 
         private void Btn_BuzzerOff_Click(object sender, RoutedEventArgs e)
@@ -937,16 +1076,32 @@ namespace SAW_TRAY_VISION_V01
             Cb_DO_Buzzer.IsChecked = false;
         }
 
+        private void Cb_DO_Buzzer_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Lb_Status_Modbus.Content.ToString() == "Good")
+            {
+                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), true);
+            }
+            else
+            {
+                MessageBox.Show("Error 0001: Wago Modbus Cotroller is not inited, Please do init to continue");
+            }
+        }
 
         private void Cb_DO_Buzzer_Unchecked(object sender, RoutedEventArgs e)
         {
-            modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), false);
+            if (Lb_Status_Modbus.Content.ToString() == "Good")
+            {
+                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), false);
+            }
+            else
+            {
+                MessageBox.Show("Error 0001: Wago Modbus Cotroller is not inited, Please do init to continue");
+            }
+            //
         }
 
-        private void Cb_DO_Buzzer_Checked(object sender, RoutedEventArgs e)
-        {
-            modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), true);
-        }
+
         #endregion
 
         #region Helper Videos Function
@@ -987,8 +1142,12 @@ namespace SAW_TRAY_VISION_V01
             }
             if (VideoDevices.Any())
             {
-                CurrentDevice = VideoDevices[0];
-                Cb_Camera.SelectedIndex = 0;
+                //if (_videoSource != null && _videoSource.IsRunning)
+                //{
+                    //CurrentDevice = VideoDevices[0];
+                    //Cb_Camera.SelectedIndex = 0;
+                //}
+
             }
             else
             {
@@ -1000,23 +1159,25 @@ namespace SAW_TRAY_VISION_V01
         {
             if (CurrentDevice != null)
             {
-                _videoSource = new VideoCaptureDevice(CurrentDevice.MonikerString);
+                // _videoSource = new VideoCaptureDevice(CurrentDevice.MonikerString);
+                _videoSource = new VideoCaptureDevice(VideoDevices[0].MonikerString);
                 _videoSource.NewFrame += video_NewFrame;
                 _videoSource.Start();
             }
         }
 
-        private void StartCamera(string monikerString)
+        private void StartCamera_02()//(string monikerString)
         {
             if (CurrentDevice != null)
             {
-                _videoSource = new VideoCaptureDevice(monikerString);
+                //_videoSource = new VideoCaptureDevice(monikerString);
+                _videoSource = new VideoCaptureDevice(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
                 _videoSource.NewFrame += video_NewFrame;
                 _videoSource.Start();
             }
         }
 
-        public void StopCamera()
+        public void StopCamera_Old()
         {
             if (_videoSource != null && _videoSource.IsRunning)
             {
@@ -1024,7 +1185,15 @@ namespace SAW_TRAY_VISION_V01
                 _videoSource.NewFrame -= new NewFrameEventHandler(video_NewFrame);
             }
         }
-        
+        public void StopCamera()
+        {
+            //if (_videoSource != null && _videoSource.IsRunning)
+            //{
+                _videoSource.SignalToStop();
+                _videoSource.Stop();
+                _videoSource.NewFrame -= new NewFrameEventHandler(video_NewFrame);
+            //}
+        }
         #endregion
 
         #region INotifyPropertyChanged members
@@ -1091,6 +1260,41 @@ namespace SAW_TRAY_VISION_V01
             //--- update random name
             Output_File_Name = _randomGenerator.Random_Output_File_Name();
             Tb_Save_Result.Text = Output_File_Name[0];
+        }
+
+        private void Cb_Camera_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            StopCamera();
+            //StartCamera_02(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
+            StartCamera_02();
+        }
+
+        private void Btn_Mode_Click(object sender, RoutedEventArgs e)
+        {
+            if(Lb_Mode.Content.ToString() == "AUTO")
+            {
+                Btn_Dry_Click(null, null);
+
+            }
+            else if(Lb_Mode.Content.ToString() == "DRY")
+            {
+                Btn_Manual_Click(null, null);
+
+            }
+            else if (Lb_Mode.Content.ToString() == "MANUAL")
+            {
+                Btn_Auto_Click(null, null);
+
+            }
+            else
+            {
+
+            }
+        }
+
+        private void Bt_Stop_Camera_Click(object sender, RoutedEventArgs e)
+        {
+            StopCamera();
         }
     }
 
