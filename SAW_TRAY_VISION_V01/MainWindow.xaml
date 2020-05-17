@@ -14,16 +14,17 @@
         <DockPanel DockPanel.Dock="Top">
             <Button DockPanel.Dock="Right"  Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="Btn_About" Content="About" Click="Btn_About_Click" ></Button>
             <StackPanel DockPanel.Dock="Left" Margin="0" Orientation="Horizontal">
-                <Button Grid.Row="0" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnHome" Content="HOME" Click="BtHome_Click" ></Button>
-                <!-- Button Grid.Row="1" Grid.Column="0" Margin="0,0,0,5" FontSize="26" VerticalAlignment="Top" x:Name="BtnIO" Content="IO" Click="BtnIO_Click"></-->
-                <Button Grid.Row="2" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnRecipe" Content="RECIPE" Click="BtnRecipe_Click"></Button>
-            </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnHome" Content="HOME" Click="BtHome_Click" ></Button>
+                    <Button Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnParameter" Content="PARAMETER" Click="BtnParameter_Click"/>
+                <Button Grid.Row="2" Grid.Column="0" Margin="2" FontSize="15" VerticalAlignment="Top" x:Name="BtnProduct" Content="PRODUCT" Click="BtnProduct_Click"></Button>
+               
+                </StackPanel>
         </DockPanel>
 
         <!-- Frame_WorkPage Dockpanel-->
         <Grid DockPanel.Dock="Bottom" Margin="0,0,0,0">
             <ScrollViewer HorizontalScrollBarVisibility="Visible" >
-                <Frame Margin="0,0,0,0" DockPanel.Dock="Top" x:Name="Frame_WorkPage" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFF0F7D9" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" MinWidth="1895" Height="928" Width="1894" MinHeight="928"/>
+                <Frame Margin="0,0,0,0" DockPanel.Dock="Top" x:Name="Frame_WorkPage" NavigationUIVisibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top" Background="White" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" MinWidth="1895" Height="928" Width="1894" MinHeight="928"/>
             </ScrollViewer>
         </Grid>
     </DockPanel>

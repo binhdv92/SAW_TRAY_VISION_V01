@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace SAW_TRAY_VISION_V01
 {
     /// <summary>
-    /// Interaction logic for Window_About.xaml
+    /// Interaction logic for ProductList.xaml
     /// </summary>
-    public partial class Window_About : Page
+    public partial class ProductList : Page
     {
-        public Window_About()
+        public ProductList()
         {
             InitializeComponent();
         }

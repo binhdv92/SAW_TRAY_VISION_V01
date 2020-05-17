@@ -13,49 +13,68 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Configuration;
-//using SAW_TRAY_VISION_V01.sources;
 
 namespace SAW_TRAY_VISION_V01
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    public class MyGlobals
+    {
+        public static Parametersv3 Parasv3 = new Parametersv3();
+        public static HomePage _Home_Page = new HomePage();
+        //public static Recipe_Page RPW = new Recipe_Page();
+        public static AboutPage _About_Page = new AboutPage();
+        public static ParametersPage _Parameters_Page = new ParametersPage();
+    }
+
     public partial class MainWindow : Window
     {
-        public HomePage    FWP  = new HomePage();
-        public Recipe_Page RWP  = new Recipe_Page();
-        public Window_About WA = new Window_About();
-
         public MainWindow()
         {
             InitializeComponent();
-            Frame_WorkPage.Content = this.FWP;
+            
+            Frame_WorkPage.Content = MyGlobals._Home_Page;
+
         }
 
         private void BtHome_Click(object sender, RoutedEventArgs e)
         {
 
-            Frame_WorkPage.Content = this.FWP;
+            Frame_WorkPage.Content = MyGlobals._Home_Page;
         }
 
         private void BtnRecipe_Click(object sender, RoutedEventArgs e)
         {
-            Frame_WorkPage.Content = RWP;
+
+            //Frame_WorkPage.Content = MyGlobals.RPW;
+
         }
 
         private void Btn_About_Click(object sender, RoutedEventArgs e)
         {
-            Frame_WorkPage.Content = WA;
+            Frame_WorkPage.Content = MyGlobals._About_Page;
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            FWP.StopCamera();
+            //MyGlobals._Home_Page.StopCamera();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            FWP.StopCamera();
+            MyGlobals._Home_Page.StopCamera();
+        }
+
+        private void BtnParameter_Click(object sender, RoutedEventArgs e)
+        {
+            Frame_WorkPage.Content = MyGlobals._Parameters_Page;
+        }
+
+        private void BtnProduct_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

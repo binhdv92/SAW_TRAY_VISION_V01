@@ -13,5 +13,6 @@ namespace SAW_TRAY_VISION_V01
     /// </summary>
     public partial class App : Application
     {
+
     }
 }

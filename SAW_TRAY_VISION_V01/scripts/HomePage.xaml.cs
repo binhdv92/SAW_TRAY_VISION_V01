@@ -32,57 +32,6 @@ using AForge.Wpf;
 
 namespace SAW_TRAY_VISION_V01
 {
-    public class RandomGenerator
-    {
-        // Generate a random number between two numbers    
-        public int RandomNumber(int min, int max)
-        {
-            Random random = new Random();
-            return random.Next(min, max);
-        }
-
-        // Generate a random string with a given size    
-        public string RandomString(int size, bool lowerCase)
-        {
-            StringBuilder builder = new StringBuilder();
-            Random random = new Random();
-            char ch;
-            for (int i = 0; i < size; i++)
-            {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                builder.Append(ch);
-            }
-            if (lowerCase)
-                return builder.ToString().ToLower();
-            return builder.ToString();
-        }
-
-        // Generate a random password    
-        public string RandomPassword()
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(RandomString(4, true));
-            builder.Append(RandomNumber(1000, 9999));
-            builder.Append(RandomString(2, false));
-            return builder.ToString();
-        }
-
-        public string[] Random_Output_File_Name()
-        {
-            DateTime _Now = new DateTime();
-            _Now = DateTime.Now;
-            //
-            string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
-            //
-            StringBuilder _builder = new StringBuilder();
-            _builder.Append(RandomString(5, true));
-            //
-            string[] Output_File_Name = new string[2];
-            Output_File_Name[0]= @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.jpg";
-            Output_File_Name[1]= @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Detected.jpg";
-            return Output_File_Name;
-        }
-    }
     public partial class HomePage : Page, INotifyPropertyChanged
     {
 
@@ -130,7 +79,9 @@ namespace SAW_TRAY_VISION_V01
         public RenderTargetBitmap Bs_Detected_Public;
 
         public System.Windows.Controls.Image tempImage = new System.Windows.Controls.Image();
-        Parameters Paras = new Parameters();
+        //Parametersv1 Paras = new Parametersv1();
+        //Parametersv3 Parasv3 = new Parametersv3();
+
         ProductsList Products = new ProductsList();
         YoloWrapper yoloWrapper;
         // Modbus Server Setup
@@ -482,15 +433,15 @@ namespace SAW_TRAY_VISION_V01
             Tb_Save_Result.Text = Output_File_Name[0];
 
             //
-            string TempStr=Paras.LoadAllParameters();
-            if (TempStr == "ERROR"){
-                MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
-            }
-            Lb_Threshold.Content = Paras.Threshold_Trigger.Value;
+            //string TempStr=Paras.LoadAllParameters();
+            //if (TempStr == "ERROR"){
+            //    MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
+            //}
+            Lb_Threshold.Content = MyGlobals.Parasv3.Threshold_Trigger;
 
             //
             //
-            yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
+            yoloWrapper = new YoloWrapper(MyGlobals.Parasv3.Algorithm.Cfg, MyGlobals.Parasv3.Algorithm.Weights, MyGlobals.Parasv3.Algorithm.Names);
 
             //
             Products.LoadProductLists_Str();
@@ -502,12 +453,12 @@ namespace SAW_TRAY_VISION_V01
 
 
             //
-            Dt_Modbus.Interval = TimeSpan.FromMilliseconds(int.Parse(Paras.Timer_Interval_Modbus.Value));
+            Dt_Modbus.Interval = TimeSpan.FromMilliseconds(MyGlobals.Parasv3.Modbus.IntervalTime);
             Dt_Modbus.Tick += Dt_ModbusTicker;
             Dt_Modbus.Stop();
 
             //
-            Dt_StateMachine.Interval = TimeSpan.FromMilliseconds(int.Parse(Paras.Timer_Interval_StateMachine.Value));
+            Dt_StateMachine.Interval = TimeSpan.FromMilliseconds(MyGlobals.Parasv3.Timer_Interval_StateMachine);
             Dt_StateMachine.Tick += Dt_StateMachineTicker;
             Dt_StateMachine.Stop();
             //
@@ -521,15 +472,14 @@ namespace SAW_TRAY_VISION_V01
         {
             try// ---read Input
             {
-                bool[] DI_Tray_Present_Sensor = modbusClient.ReadDiscreteInputs(int.Parse(Paras.DI_Tray_Present_Sensor.Value), 1);
+                bool[] DI_Tray_Present_Sensor = modbusClient.ReadDiscreteInputs(MyGlobals.Parasv3.DI_Tray_Present_Sensor, 1);
                 Cb_DI_Tray_Present_Sensor.IsChecked = DI_Tray_Present_Sensor[0];
                 
                 if (DI_Tray_Present_Sensor[0] )
                 {
-                    if(Threshold_Counter <= float.Parse(Paras.Threshold_Trigger.Value))
+                    if(Threshold_Counter <= MyGlobals.Parasv3.Threshold_Trigger)
                     {
                         Threshold_Counter++;
-                        //Capture_Flag = true;
                     }
                 }
                 else
@@ -550,11 +500,11 @@ namespace SAW_TRAY_VISION_V01
             // ---Write Digital Output
             try
             {
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Red_Light.Value), Convert.ToBoolean(Cb_DO_Red_Light.IsChecked));
-                //modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Amber_Light.Value), Convert.ToBoolean(//Cb_DO_Amber_Light.IsChecked));
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Green_Light.Value), Convert.ToBoolean(Cb_DO_Green_Light.IsChecked));
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), Convert.ToBoolean(Cb_DO_Buzzer.IsChecked));
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Disable_Tray_Loading.Value), Convert.ToBoolean(Cb_DO_Disable_Tray_Loading.IsChecked));
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Red_Port, Convert.ToBoolean(Cb_DO_Red_Light.IsChecked));
+                //modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Amber_Port, Convert.ToBoolean(//Cb_DO_Amber_Light.IsChecked));
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Green_Port, Convert.ToBoolean(Cb_DO_Green_Light.IsChecked));
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Buzzer_Port, Convert.ToBoolean(Cb_DO_Buzzer.IsChecked));
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.DO_Disable_Tray_Loading, Convert.ToBoolean(Cb_DO_Disable_Tray_Loading.IsChecked));
             }
             catch
             {
@@ -573,7 +523,7 @@ namespace SAW_TRAY_VISION_V01
                     case "RUNNING":
                         Lb_Status.Content = "RUNNING";
                         StateMachine_Running();
-                        if (Threshold_Counter == float.Parse(Paras.Threshold_Trigger.Value))
+                        if (Threshold_Counter == MyGlobals.Parasv3.Threshold_Trigger)
                         {
                             StateMachine_Flag = "CAPTURE";
                         }
@@ -790,8 +740,8 @@ namespace SAW_TRAY_VISION_V01
 
             try // ---Modbus Server Setup
             {
-                modbusClient = new ModbusClient(Paras.Modbus_Server_IP.Value, int.Parse(Paras.Modbus_Server_Port.Value));
-                modbusClient.LogFileFilename = Paras.Modbus_Server_LogFileFilename.Value;
+                modbusClient = new ModbusClient(MyGlobals.Parasv3.Modbus.IP, MyGlobals.Parasv3.Modbus.Port);
+                modbusClient.LogFileFilename = MyGlobals.Parasv3.Modbus.LogFile;
                 modbusClient.Connect();
                 Dt_Modbus.Start();
                 //flag_init_Modbus = true;
@@ -799,7 +749,7 @@ namespace SAW_TRAY_VISION_V01
             }
             catch
             {
-                MessageBox.Show("Error102: Fail to connect to the Modbus Server at the address " + Paras.Modbus_Server_IP.Value + ":" + Paras.Modbus_Server_Port.Value);
+                MessageBox.Show("Error102: Fail to connect to the Modbus Server at the address " + MyGlobals.Parasv3.Modbus.IP + ":" + MyGlobals.Parasv3.Modbus.Port);
                 //StateMachine_NotInit();
                 //flag_init_Modbus = false;
                 Lb_Status_Modbus.Content = "Fail";
@@ -879,8 +829,6 @@ namespace SAW_TRAY_VISION_V01
         }
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
-            // Yolov3 process
-            // yoloWrapper = new YoloWrapper(Paras.Yolov3_Cfg.Value, Paras.Yolov3_Weights.Value, Paras.Yolov3_Names.Value);
             var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
             Dg_Debug.ItemsSource = Items_Temp;
 
@@ -961,7 +909,7 @@ namespace SAW_TRAY_VISION_V01
             for (int i_group = 0; i_group < boxgroup.Count; i_group++)
             {
                 double _Temp_Box_Height = double.Parse(boxgroup[i_group]["Height"].ToString());
-                if (_Temp_Box_Height >= double.Parse(Paras.Box_Height_Min.Value))
+                if (_Temp_Box_Height >= (double)MyGlobals.Parasv3.Algorithm.BoxHeightMin)
                 {
                     ID_table = new DataTable();
                     for (int i = 0; i < header_array.Length; i++)
@@ -1087,7 +1035,7 @@ namespace SAW_TRAY_VISION_V01
         {
             if (Lb_Status_Modbus.Content.ToString() == "Good")
             {
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), true);
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Buzzer_Port, true);
             }
             else
             {
@@ -1099,7 +1047,7 @@ namespace SAW_TRAY_VISION_V01
         {
             if (Lb_Status_Modbus.Content.ToString() == "Good")
             {
-                modbusClient.WriteSingleCoil(int.Parse(Paras.DO_Buzzer.Value), false);
+                modbusClient.WriteSingleCoil(MyGlobals.Parasv3.Tower.Buzzer_Port, false);
             }
             else
             {

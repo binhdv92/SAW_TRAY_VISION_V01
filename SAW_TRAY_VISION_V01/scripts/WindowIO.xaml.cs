@@ -25,7 +25,7 @@ namespace SAW_TRAY_VISION_V01
     {
         ModbusClient modbusClient;
         bool Connect_flag;
-        Parameters Paras = new Parameters();
+        Parametersv1 Paras = new Parametersv1();
 
         #region Ham Con
         public void WindowIO_Init()
