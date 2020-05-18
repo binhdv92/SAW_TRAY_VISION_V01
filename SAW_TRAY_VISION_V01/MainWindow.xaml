@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Icon="v4.png"
         WindowStartupLocation="CenterScreen"
-        Title="JEDEC TRAY ID READER V1.1 (Powered by binhdv92)" Height="1000" Width="1920" Closed="Window_Closed" Closing="Window_Closing">
+        Title="JEDEC TRAY ID READER V1.2 (Powered by binhdv92)" Height="1000" Width="1920" Closed="Window_Closed" Closing="Window_Closing">
     <Viewbox>
     <DockPanel LastChildFill="True">
         <!-- Control Dockpanel-->

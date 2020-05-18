@@ -1072,7 +1072,7 @@ namespace SAW_TRAY_VISION_V01
         private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
-
+            Console.WriteLine($"Seleted Tray Target: {Detection_Target_ID}");
         }
 
         private void video_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
