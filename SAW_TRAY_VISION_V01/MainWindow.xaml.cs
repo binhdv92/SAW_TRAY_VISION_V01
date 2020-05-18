@@ -23,10 +23,14 @@ namespace SAW_TRAY_VISION_V01
     public class MyGlobals
     {
         public static Parametersv3 Parasv3 = new Parametersv3();
+        public static Products Prods = new Products();
+        
+
+
         public static HomePage _Home_Page = new HomePage();
-        //public static Recipe_Page RPW = new Recipe_Page();
-        public static AboutPage _About_Page = new AboutPage();
         public static ParametersPage _Parameters_Page = new ParametersPage();
+        public static ProductListPage _ProductList_Page = new ProductListPage();
+        public static AboutPage _About_Page = new AboutPage();
     }
 
     public partial class MainWindow : Window
@@ -74,7 +78,7 @@ namespace SAW_TRAY_VISION_V01
 
         private void BtnProduct_Click(object sender, RoutedEventArgs e)
         {
-
+            Frame_WorkPage.Content = MyGlobals._ProductList_Page;
         }
     }
 }

@@ -82,7 +82,7 @@ namespace SAW_TRAY_VISION_V01
         //Parametersv1 Paras = new Parametersv1();
         //Parametersv3 Parasv3 = new Parametersv3();
 
-        ProductsList Products = new ProductsList();
+        //ProductsList Products = new ProductsList();
         YoloWrapper yoloWrapper;
         // Modbus Server Setup
         ModbusClient modbusClient;
@@ -94,7 +94,9 @@ namespace SAW_TRAY_VISION_V01
         public bool flag_init_Camera;
         public bool flag_init_Modbus;
         public bool Capture_Flag=false;
-        public string[] TrayIDList { get; set; }
+        //public string[] TrayIDList { get; set; }
+        //public int tempi = 0;
+        //public List<string> TrayIDList;
         public DetectionResult result;
         public int Pass_FLAG = 0;
         public int Fail_FLAG = 0;
@@ -444,8 +446,11 @@ namespace SAW_TRAY_VISION_V01
             yoloWrapper = new YoloWrapper(MyGlobals.Parasv3.Algorithm.Cfg, MyGlobals.Parasv3.Algorithm.Weights, MyGlobals.Parasv3.Algorithm.Names);
 
             //
-            Products.LoadProductLists_Str();
-            TrayIDList = Products._ProductLists_Str;
+            // Products.LoadProductLists_Str();
+            //TrayIDList = Products._ProductLists_Str;
+            //TrayIDList = MyGlobals.Prods.ProductsTable;
+            
+            Cb_Recipe.ItemsSource = MyGlobals.Prods.TrayIDList;
             Cb_Recipe.SelectedIndex = 2;
 
             //
@@ -546,6 +551,10 @@ namespace SAW_TRAY_VISION_V01
                         else if(Lb_Mode.Content.ToString() == "DRY")
                         {
                             StateMachine_Flag = "RUNNING";
+                            if (MyGlobals.Parasv3.Flag_Auto_Save_Image == true)
+                            {
+                                Btn_Save_Result_Click(null,null);
+                            }
                         }
                         break;
 
@@ -565,7 +574,7 @@ namespace SAW_TRAY_VISION_V01
                         else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
                         {
                             StateMachine_WrongTray();
-
+                            Btn_Save_Result_Click(null, null);
                             Dt_StateMachine.Stop();
 
                         }
@@ -1062,7 +1071,7 @@ namespace SAW_TRAY_VISION_V01
         #region Helper Videos Function
         private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split(',')[1];
+            Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
 
         }
 
@@ -1251,6 +1260,7 @@ namespace SAW_TRAY_VISION_V01
         {
             StopCamera();
         }
+
     }
 
 }

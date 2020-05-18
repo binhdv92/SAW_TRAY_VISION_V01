@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using SAW_TRAY_VISION_V01.scripts;
 
 namespace SAW_TRAY_VISION_V01
 {
@@ -209,7 +208,7 @@ namespace SAW_TRAY_VISION_V01
             public int Port;
             public string Logfile;
             public int IntervalTime;
-            public __Modbus(string name, string ip, int port, string logfile,int intervalltime)
+            public __Modbus(string name, string ip, int port, string logfile, int intervalltime)
             {
                 Name = name;
                 IP = ip;
@@ -269,7 +268,7 @@ namespace SAW_TRAY_VISION_V01
 
         #region Khai báo biến và khởi tạo value default
         public string Xmlfile = "sources/parameters.xml";
-        public __Modbus Modbus = new __Modbus("Wago 750-324", "172.19.20.201", 502, "Modbus_IO_Log.txt",50);
+        public __Modbus Modbus = new __Modbus("Wago 750-324", "172.19.20.201", 502, "Modbus_IO_Log.txt", 50);
         public __Algorithm Algorithm = new __Algorithm(
             "yolov3",
             "sources/algorithm/cfg/yolov3-itn-fullbox.cfg",
@@ -277,16 +276,16 @@ namespace SAW_TRAY_VISION_V01
             "sources/algorithm/cfg/itn_fullbox.names",
             40
          );
-        public int DI_Tray_Present_Sensor=3;
-        public int Threshold_Trigger=10;
-        public int Timer_Interval_StateMachine=50;
+        public int DI_Tray_Present_Sensor = 3;
+        public int Threshold_Trigger = 10;
+        public int Timer_Interval_StateMachine = 50;
         public DataTable Paras = new DataTable();
         #endregion
 
         #region Init, startup cho Class 
         public Parametersv2()
         {
-           
+
         }
         #endregion
 
@@ -341,7 +340,7 @@ namespace SAW_TRAY_VISION_V01
             return (result);
         }
 
-        public string SearchValue(DataTable Parameters,string Searchkey)
+        public string SearchValue(DataTable Parameters, string Searchkey)
         {
             string expression = $"key=\'{Searchkey}\'";
             DataRow[] Temprow = Parameters.Select(expression);
@@ -422,6 +421,8 @@ namespace SAW_TRAY_VISION_V01
                 Value = value;
             }
         }
+
+
         #endregion
 
         #region Khai báo biến và khởi tạo value default
@@ -433,17 +434,25 @@ namespace SAW_TRAY_VISION_V01
         public int DI_Tray_Present_Sensor;
         public int Threshold_Trigger;
         public int Timer_Interval_StateMachine;
+        public Boolean Flag_Auto_Save_Image;
         //
         public DataSet ParametersDataset = new DataSet();
 
 
-        #endregion
+        #endregion Khai báo biến và khởi tạo value default
 
         #region Init, startup cho Class 
         public Parametersv3()
         {
-            //FromXml();
-            FromDefault();
+            try
+            {
+                FromXml();
+            }
+            catch
+            {
+                FromDefault();
+            }
+            //
             ToDataSet();
         }
         #endregion
@@ -464,6 +473,7 @@ namespace SAW_TRAY_VISION_V01
             this.DI_Tray_Present_Sensor = 0;
             this.Threshold_Trigger = 10;
             this.Timer_Interval_StateMachine = 50;
+            this.Flag_Auto_Save_Image = false;
         }
 
         public void ToXml()
@@ -579,6 +589,10 @@ namespace SAW_TRAY_VISION_V01
             TempNode.InnerText = Timer_Interval_StateMachine.ToString();
             OthersNode.AppendChild(TempNode);
 
+            TempNode = xmlDoc.CreateElement("Flag_Auto_Save_Image");
+            TempNode.InnerText = Flag_Auto_Save_Image.ToString();
+            OthersNode.AppendChild(TempNode);
+
             #endregion other
 
             // Save xml
@@ -625,6 +639,9 @@ namespace SAW_TRAY_VISION_V01
 
             TempNode = TempDoc.SelectNodes("//Parameters/Others/Timer_Interval_StateMachine");
             Timer_Interval_StateMachine = int.Parse(TempNode[0].InnerText);
+
+            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Auto_Save_Image");
+            Flag_Auto_Save_Image = Boolean.Parse(TempNode[0].InnerText);
         }
 
         public void ToDataSet()
@@ -634,14 +651,14 @@ namespace SAW_TRAY_VISION_V01
             DataTable ModbusTable = new DataTable("Modbus");
             DataTable AlgorithmTable = new DataTable("Algorithm");
             DataTable TowerTable = new DataTable("Tower");
-            DataTable Other = new DataTable("Other");
+            DataTable OtherTable = new DataTable("Other");
 
             ModbusTable.Columns.Add("Name", typeof(string));
             ModbusTable.Columns.Add("IP", typeof(string));
             ModbusTable.Columns.Add("Port", typeof(int));
             ModbusTable.Columns.Add("LogFile", typeof(string));
             ModbusTable.Columns.Add("IntervalTime", typeof(int));
-            ModbusTable.Rows.Add(new Object[] {Modbus.Name, Modbus.IP, Modbus.Port, Modbus.LogFile, Modbus.IntervalTime});
+            ModbusTable.Rows.Add(new Object[] { Modbus.Name, Modbus.IP, Modbus.Port, Modbus.LogFile, Modbus.IntervalTime });
 
             AlgorithmTable.Columns.Add("Name", typeof(string));
             AlgorithmTable.Columns.Add("Cfg", typeof(string));
@@ -657,24 +674,36 @@ namespace SAW_TRAY_VISION_V01
             TowerTable.Columns.Add("Buzzer_Port", typeof(int));
             TowerTable.Rows.Add(new object[] { Tower.Name, Tower.Red_Port, Tower.Amber_Port, Tower.Green_Port, Tower.Buzzer_Port });
 
+            OtherTable.Columns.Add("Name", typeof(string));
+            OtherTable.Columns.Add("Value", typeof(string));
+            OtherTable.Rows.Add(new object[] { "DO_Disable_Tray_Loading", DO_Disable_Tray_Loading });
+            OtherTable.Rows.Add(new object[] { "DI_Tray_Present_Sensor", DI_Tray_Present_Sensor });
+            OtherTable.Rows.Add(new object[] { "Threshold_Trigger", Threshold_Trigger });
+            OtherTable.Rows.Add(new object[] { "Timer_Interval_StateMachine", Timer_Interval_StateMachine });
+            OtherTable.Rows.Add(new object[] { "Flag_Auto_Save_Image", Flag_Auto_Save_Image });
 
+            //
             TempDataSet.Tables.Add(ModbusTable);
             TempDataSet.Tables.Add(AlgorithmTable);
             TempDataSet.Tables.Add(TowerTable);
+            TempDataSet.Tables.Add(OtherTable);
 
             ParametersDataset = TempDataSet;
         }
-        
+
         public void FromDataSet()
         {
             DataRow TempRow;
-            
+            DataRow[] TempRow2;
+            string Searchkey;
+            string expression;
+
             TempRow = ParametersDataset.Tables["Modbus"].Rows[0];
 
             Modbus.Name = TempRow["Name"].ToString();
             Modbus.IP = TempRow["IP"].ToString();
             Modbus.Port = (int)TempRow["Port"];
-            Modbus.LogFile =  TempRow["LogFile"].ToString();
+            Modbus.LogFile = TempRow["LogFile"].ToString();
             Modbus.IntervalTime = (int)TempRow["IntervalTime"];
 
             TempRow = ParametersDataset.Tables["Algorithm"].Rows[0];
@@ -691,8 +720,148 @@ namespace SAW_TRAY_VISION_V01
             Tower.Amber_Port = (int)TempRow["Amber_Port"];
             Tower.Green_Port = (int)TempRow["Green_Port"];
             Tower.Buzzer_Port = (int)TempRow["Buzzer_Port"];
+
+            Searchkey = "DO_Disable_Tray_Loading";
+            expression = $"Name=\'{Searchkey}\'";
+            //ParametersDataset.Tables["Other"].Columns["Name"].
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            DO_Disable_Tray_Loading = int.Parse(TempRow2[0][1].ToString());
+
+            Searchkey = "DI_Tray_Present_Sensor";
+            expression = $"Name=\'{Searchkey}\'";
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            DI_Tray_Present_Sensor = int.Parse(TempRow2[0][1].ToString());
+
+            Searchkey = "Threshold_Trigger";
+            expression = $"Name=\'{Searchkey}\'";
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            Threshold_Trigger = int.Parse(TempRow2[0][1].ToString());
+
+            Searchkey = "Timer_Interval_StateMachine";
+            expression = $"Name=\'{Searchkey}\'";
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            Timer_Interval_StateMachine = int.Parse(TempRow2[0][1].ToString());
+
+            Searchkey = "Flag_Auto_Save_Image";
+            expression = $"Name=\'{Searchkey}\'";
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            Flag_Auto_Save_Image = Boolean.Parse(TempRow2[0][1].ToString());
         }
 
         #endregion Định nghĩa các Hàm, Method của Class
+    }
+
+    public class Products
+    {
+        #region Định Nghĩa Struct
+        public struct __Product
+        {
+            public int ID;
+            public string TrayID;
+            public string Product;
+
+            public __Product(int id, string trayid, string product)
+            {
+                ID = id;
+                TrayID = trayid;
+                Product = product;
+            }
+        }
+        #endregion Định Nghĩa Struct
+
+        #region Khai báo biến và khởi tạo value default
+        public string Xmlfile = "sources/products.xml";
+        public string XmlfileSchema = "sources/products_schema.xml";
+        public DataTable ProductsTable;
+        public List<string> TrayIDList;
+
+        //public DataSet ProductsDataSet;
+
+        #endregion Khai báo biến và khởi tạo value default
+        public Products(){
+            FromDefault();
+            //FromXmlDataTable();
+        }
+
+        public void FromDefault()
+        {
+            //ProductsList
+            //DataSet TempDataSet = new DataSet("Products");
+            DataTable TempDataTable = new DataTable("Product");
+
+            TempDataTable.Columns.Add("ID",typeof(int));
+            TempDataTable.Columns.Add("TrayID", typeof(string));
+            TempDataTable.Columns.Add("Product", typeof(string));
+
+            TempDataTable.Rows.Add(new Object[] { 0, "500253654", "Molded XG736" });
+            TempDataTable.Rows.Add(new Object[] { 1, "500289821", "Jefferson Peak" });
+            TempDataTable.Rows.Add(new Object[] { 2, "500237051", "Molded Titan Ridge" });
+            TempDataTable.Rows.Add(new Object[] { 3, "500349947", "XG-756 B0 ICE" });
+            TempDataTable.Rows.Add(new Object[] { 4, "500289821", "Jefferson Peak A1" });
+            TempDataTable.Rows.Add(new Object[] { 5, "500289821", "Harrison Peak 2" });
+            TempDataTable.Rows.Add(new Object[] { 6, "500377825", "XG-766 250UM STREET" });
+            TempDataTable.Rows.Add(new Object[] { 7, "500237051", "Alpine Ridge" });
+            TempDataTable.Rows.Add(new Object[] { 8, "500209901", "Cooper Bridge" });
+            TempDataTable.Rows.Add(new Object[] { 9, "500125525", "XG727" });
+            TempDataTable.Rows.Add(new Object[] { 10, "500319672", "Sue Creek 150 Mold Cap" });
+            TempDataTable.Rows.Add(new Object[] { 11, "500316867", "Monette Hill 550" });
+            TempDataTable.Rows.Add(new Object[] { 12, "500288750", "XG748" });
+            TempDataTable.Rows.Add(new Object[] { 13, "500322975", "Bandos A0" });
+            TempDataTable.Rows.Add(new Object[] { 14, "500209901", "Delta Bridge" });
+            TempDataTable.Rows.Add(new Object[] { 15, "500289820", "Thunder peak 2" });
+            TempDataTable.Rows.Add(new Object[] { 16, "500337384", "XG-742 IBIS DC" });
+            TempDataTable.Rows.Add(new Object[] { 17, "500209901", "Burnside Bridge" });
+            TempDataTable.Rows.Add(new Object[] { 18, "500337384", "XG-743" });
+            TempDataTable.Rows.Add(new Object[] { 19, "500209901", "Mystery Ridge 3 TV" });
+            TempDataTable.Rows.Add(new Object[] { 20, "500300257", "Cannon Lake PCH Mold" });
+            TempDataTable.Rows.Add(new Object[] { 21, "500237051", "Goshen Ridge" });
+            TempDataTable.Rows.Add(new Object[] { 22, "500237051", "Maple Ridge" });
+            TempDataTable.Rows.Add(new Object[] { 23, "500355085", "Elixir Springs" });
+            TempDataTable.Rows.Add(new Object[] { 24, "500390261", "Harrison Peak 1 iSFE" });
+            TempDataTable.Rows.Add(new Object[] { 25, "500125525", "Lakefield" });
+
+            ProductsTable = TempDataTable;
+            GetTrayIDList();
+            //TempDataSet.Tables.Add(TempDataTable);
+            //ProductsDataSet = TempDataSet;
+        }
+
+        public void ToXml()
+        {
+            ProductsTable.WriteXmlSchema(XmlfileSchema);
+            ProductsTable.WriteXml(Xmlfile);
+        }
+        public void ToXmlDataTable()
+        {
+
+            ProductsTable.WriteXmlSchema(XmlfileSchema);
+            ProductsTable.WriteXml(Xmlfile);
+        }
+
+        public void FromXml()
+        {
+            DataTable TempDataTable = new DataTable("Product");
+            TempDataTable.ReadXmlSchema(XmlfileSchema);
+            TempDataTable.ReadXml(Xmlfile);
+            ProductsTable = TempDataTable;
+            GetTrayIDList();
+        }
+
+        public void FromXmlDataTable()
+        {
+            DataTable TempDataTable = new DataTable("Product");
+            TempDataTable.ReadXmlSchema(XmlfileSchema);
+            TempDataTable.ReadXml(Xmlfile);
+            ProductsTable = TempDataTable;
+            GetTrayIDList();
+        }
+        public void GetTrayIDList()
+        {
+            TrayIDList = new List<string>();
+            for (int tempi = 0; tempi < ProductsTable.Rows.Count; tempi++)
+            {
+                TrayIDList.Add($"{ProductsTable.Rows[tempi]["ID"].ToString()}|{ProductsTable.Rows[tempi]["TrayID"]}|{ProductsTable.Rows[tempi]["Product"]}");
+            }
+        }
     }
 }

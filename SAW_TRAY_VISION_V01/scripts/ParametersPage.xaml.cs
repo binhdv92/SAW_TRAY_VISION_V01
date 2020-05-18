@@ -52,7 +52,7 @@ namespace SAW_TRAY_VISION_V01
         private void Bt_Switch_Table_Click(object sender, RoutedEventArgs e)
         {
             SelectedTable += 1;
-            if (SelectedTable >= 3)
+            if (SelectedTable >= MyGlobals.Parasv3.ParametersDataset.Tables.Count)
             {
                 SelectedTable = 0;
             }
@@ -64,6 +64,11 @@ namespace SAW_TRAY_VISION_V01
             MyGlobals.Parasv3.ToDataSet();
             Lb_value.Content = $"{SelectedTable} - {MyGlobals.Parasv3.ParametersDataset.Tables[SelectedTable].TableName}";
             dg1.ItemsSource = MyGlobals.Parasv3.ParametersDataset.Tables[SelectedTable].DefaultView;
+        }
+
+        private void Bt_Apply_Click(object sender, RoutedEventArgs e)
+        {
+            MyGlobals.Parasv3.FromDataSet();
         }
     }
 }

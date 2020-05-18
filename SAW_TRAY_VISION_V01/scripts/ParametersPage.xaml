@@ -39,6 +39,7 @@
                     </Border>
                 <!--StackPanel Orientation="Horizontal" Margin="10" -->
                     <DockPanel>
+                        <Button DockPanel.Dock="Left" x:Name="Bt_Apply" Click="Bt_Apply_Click" Content="Apply" Margin="5" Width="50"/>
                         <Button DockPanel.Dock="Left" x:Name="Bt_Save" Click="Bt_Save_Click" Content="Save" Margin="5" Width="50"/>
                         <Button DockPanel.Dock="Right" x:Name="Bt_Default" Click="Bt_Default_Click" Content="Default" Margin="5" Width="50" Background="Red"></Button>
                     </DockPanel>

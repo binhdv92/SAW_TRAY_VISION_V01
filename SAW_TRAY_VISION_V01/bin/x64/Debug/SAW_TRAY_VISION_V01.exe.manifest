@@ -126,14 +126,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SAW_TRAY_VISION_V01.exe" size="301480">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SAW_TRAY_VISION_V01.exe" size="300968">
       <assemblyIdentity name="SAW_TRAY_VISION_V01" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>NjznmM08J38E8rW/My0IcHsEeVo184OXGoCt+TeygeI=</dsig:DigestValue>
+        <dsig:DigestValue>CQXlyBof7IWGcgTR7CaEtPLP4y+35Zz2GKdzrv8ECjI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

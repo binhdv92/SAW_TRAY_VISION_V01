@@ -122,6 +122,7 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
 
                             <Label    Grid.Row="0" Grid.Column="0" Margin="2" FontSize="15" Content = "Camera"/>
@@ -137,7 +138,8 @@
                                       SelectionChanged="Cb_Camera_SelectionChanged"/>
 
                             <Label    Grid.Row="2" Grid.Column="0" Margin="2" FontSize="15" Content = "Recipe"/>
-                            <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" FontSize="15" Grid.ColumnSpan="7" x:Name="Cb_Recipe" ItemsSource="{Binding TrayIDList}" IsEditable="True" SelectionChanged="Cb_Recipe_SelectionChanged" />
+                            <ComboBox Grid.Row="2" Grid.Column="1" Margin="2" FontSize="15" Grid.ColumnSpan="7" x:Name="Cb_Recipe" ItemsSource="{Binding MyGlobals.Prods.ProductsTable.Rows}" SelectionChanged="Cb_Recipe_SelectionChanged" IsTextSearchEnabled="True"/>
+
                         </Grid>
                     </GroupBox>
 
