@@ -25,6 +25,7 @@ using System.Globalization;
 using System.IO;
 
 using Alturos.Yolo;
+using Alturos.Yolo.Model;
 using EasyModbus;
 using System.Windows.Threading;
 //using SAW_TRAY_VISION_V01.sources;
@@ -71,6 +72,8 @@ namespace SAW_TRAY_VISION_V01
 
 
         #region Khai Bao Bien Toan Cuc
+        public BitmapImage BitmapImage_public;
+        public System.Collections.Generic.IEnumerable<YoloItem> Items_Temp;
         string Detection_Target_ID = "N/A";
 
         string UriSource_TestImage = AppDomain.CurrentDomain.BaseDirectory + @"sources\media\CameraSnapshot.jpg";
@@ -107,6 +110,44 @@ namespace SAW_TRAY_VISION_V01
         #endregion
 
         #region Ham con
+        public List<string> ToYolov3OriginFormat(System.Collections.Generic.IEnumerable<YoloItem> Items_Temp, BitmapImage BitmapImage_public,string filename)
+        {
+            List<string> tempstrlist=new List<string>();
+            string tempstr;
+
+            float X,Y,Width,Height;
+            int Type;
+            var templen = BitmapImage_public.Width;
+
+            
+
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                foreach (YoloItem Item in Items_Temp)
+                {
+                    X = (float)(Item.X+ Item.Width / 2) / (float)BitmapImage_public.Width;
+                    Y = (float)(Item.Y+ Item.Height/ 2) / (float)BitmapImage_public.Height;
+                    Width = (float)Item.Width / (float)BitmapImage_public.Width;
+                    Height = (float)Item.Height / (float)BitmapImage_public.Height;
+                    if (Item.Type == "box")
+                    {
+                        Type = 10;
+                    }
+                    else
+                    {
+                        Type = int.Parse(Item.Type);
+                    }
+
+                    tempstr = $"{Type} {X} {Y} {Width} {Height}";
+                    tempstrlist.Add(tempstr);
+                    writer.WriteLine(tempstr);
+                }
+            }
+
+            //tempstr = $"{X},{Y},{Width},{Height}";
+            return (tempstrlist);
+        }
+
         private System.Windows.Media.SolidColorBrush ReturnColor_byType(string type)
         {
             switch (type)
@@ -547,6 +588,11 @@ namespace SAW_TRAY_VISION_V01
                         if (Lb_Mode.Content.ToString() == "AUTO")
                         {
                             StateMachine_Flag = "MAKE DECISION";
+                            if (MyGlobals.Parasv3.Flag_Collect_Image_Sample == true)
+                            {
+                                Btn_Save_Result_Click(null, null);
+                            }
+
                         }
                         else if(Lb_Mode.Content.ToString() == "DRY")
                         {
@@ -817,9 +863,9 @@ namespace SAW_TRAY_VISION_V01
         {
             try
             {
-                BitmapImage img = videoPlayer.Source as BitmapImage;
-                ImgSnapShoot.Source = img;
-                this.Bi_Public = img;
+                BitmapImage_public = videoPlayer.Source as BitmapImage;
+                ImgSnapShoot.Source = BitmapImage_public;
+                this.Bi_Public = BitmapImage_public;
 
                 //Convert Bitmap to byte[]
                 PngBitmapEncoder Encoder_Temp = new PngBitmapEncoder();
@@ -838,7 +884,9 @@ namespace SAW_TRAY_VISION_V01
         }
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
-            var Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
+            Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
+            //var Items_Temp_yolov3_format = ToYolov3OriginFormat(Items_Temp, this.DataByte_Public);
+            
             Dg_Debug.ItemsSource = Items_Temp;
 
             #region Draw the result onto Raw image
@@ -1220,10 +1268,16 @@ namespace SAW_TRAY_VISION_V01
             {
                 MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name[1] + "\n\r\n\r" + ex);
             }
+            
+
+            //to Yolov3 Text Format label
+            ToYolov3OriginFormat(Items_Temp, this.BitmapImage_public, Output_File_Name[2]);
 
             //--- update random name
             Output_File_Name = _randomGenerator.Random_Output_File_Name();
             Tb_Save_Result.Text = Output_File_Name[0];
+
+            
         }
 
         private void Cb_Camera_SelectionChanged(object sender, SelectionChangedEventArgs e)

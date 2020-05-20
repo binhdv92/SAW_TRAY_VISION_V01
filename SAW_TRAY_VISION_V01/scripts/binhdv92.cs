@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
+
 namespace SAW_TRAY_VISION_V01
 {
     public class RandomGenerator
@@ -52,11 +53,12 @@ namespace SAW_TRAY_VISION_V01
             string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
             //
             StringBuilder _builder = new StringBuilder();
-            _builder.Append(RandomString(5, true));
+            _builder.Append(RandomString(10, true));
             //
-            string[] Output_File_Name = new string[2];
+            string[] Output_File_Name = new string[3];
             Output_File_Name[0] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.jpg";
             Output_File_Name[1] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Detected.jpg";
+            Output_File_Name[2] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.txt";
             return Output_File_Name;
         }
     }
@@ -435,6 +437,7 @@ namespace SAW_TRAY_VISION_V01
         public int Threshold_Trigger;
         public int Timer_Interval_StateMachine;
         public Boolean Flag_Auto_Save_Image;
+        public Boolean Flag_Collect_Image_Sample;
         //
         public DataSet ParametersDataset = new DataSet();
 
@@ -460,7 +463,7 @@ namespace SAW_TRAY_VISION_V01
         #region Định nghĩa các Hàm, Method của Class
         public void FromDefault()
         {
-            Modbus = new __Modbus("Wago 750-324", "172.19.20.201", 502, "modbus.log", 50);
+            Modbus = new __Modbus("Wago 750-324", "172.20.9.201", 502, "modbus.log", 50);
             Algorithm = new __Algorithm(
                 "yolov3",
                 "sources/algorithm/cfg/yolov3-itn-fullbox.cfg",
@@ -473,7 +476,8 @@ namespace SAW_TRAY_VISION_V01
             this.DI_Tray_Present_Sensor = 0;
             this.Threshold_Trigger = 10;
             this.Timer_Interval_StateMachine = 50;
-            this.Flag_Auto_Save_Image = false;
+            this.Flag_Auto_Save_Image = true;
+            this.Flag_Collect_Image_Sample = false;
         }
 
         public void ToXml()
@@ -593,6 +597,10 @@ namespace SAW_TRAY_VISION_V01
             TempNode.InnerText = Flag_Auto_Save_Image.ToString();
             OthersNode.AppendChild(TempNode);
 
+            TempNode = xmlDoc.CreateElement("Flag_Collect_Image_Sample");
+            TempNode.InnerText = Flag_Collect_Image_Sample.ToString();
+            OthersNode.AppendChild(TempNode);
+
             #endregion other
 
             // Save xml
@@ -642,6 +650,11 @@ namespace SAW_TRAY_VISION_V01
 
             TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Auto_Save_Image");
             Flag_Auto_Save_Image = Boolean.Parse(TempNode[0].InnerText);
+
+            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Collect_Image_Sample");
+            Flag_Collect_Image_Sample = Boolean.Parse(TempNode[0].InnerText);
+
+            
         }
 
         public void ToDataSet()
@@ -681,6 +694,8 @@ namespace SAW_TRAY_VISION_V01
             OtherTable.Rows.Add(new object[] { "Threshold_Trigger", Threshold_Trigger });
             OtherTable.Rows.Add(new object[] { "Timer_Interval_StateMachine", Timer_Interval_StateMachine });
             OtherTable.Rows.Add(new object[] { "Flag_Auto_Save_Image", Flag_Auto_Save_Image });
+            OtherTable.Rows.Add(new object[] { "Flag_Collect_Image_Sample", Flag_Collect_Image_Sample });
+            
 
             //
             TempDataSet.Tables.Add(ModbusTable);
@@ -746,6 +761,12 @@ namespace SAW_TRAY_VISION_V01
             expression = $"Name=\'{Searchkey}\'";
             TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
             Flag_Auto_Save_Image = Boolean.Parse(TempRow2[0][1].ToString());
+
+            Searchkey = "Flag_Collect_Image_Sample";
+            expression = $"Name=\'{Searchkey}\'";
+            TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
+            Flag_Collect_Image_Sample = Boolean.Parse(TempRow2[0][1].ToString());
+           
         }
 
         #endregion Định nghĩa các Hàm, Method của Class
@@ -778,7 +799,7 @@ namespace SAW_TRAY_VISION_V01
         //public DataSet ProductsDataSet;
 
         #endregion Khai báo biến và khởi tạo value default
-        public Products(){
+        public Products() {
             FromDefault();
             //FromXmlDataTable();
         }
@@ -789,7 +810,7 @@ namespace SAW_TRAY_VISION_V01
             //DataSet TempDataSet = new DataSet("Products");
             DataTable TempDataTable = new DataTable("Product");
 
-            TempDataTable.Columns.Add("ID",typeof(int));
+            TempDataTable.Columns.Add("ID", typeof(int));
             TempDataTable.Columns.Add("TrayID", typeof(string));
             TempDataTable.Columns.Add("Product", typeof(string));
 
