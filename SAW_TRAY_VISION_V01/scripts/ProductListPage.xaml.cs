@@ -32,17 +32,20 @@ namespace SAW_TRAY_VISION_V01
 
         private void Bt_Refesh_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ProductListPage", "Clicked Refesh Button");
             MyGlobals.Prods.FromXml();
             Show_Table();
         }
 
         private void Bt_Save_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ProductListPage", "Clicked Save Button");
             MyGlobals.Prods.ToXml();
         }
 
         private void Bt_Default_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ProductListPage", "Clicked Default Button");
             MyGlobals.Prods.FromDefault();
             Show_Table();
 

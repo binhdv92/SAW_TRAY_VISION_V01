@@ -33,18 +33,21 @@ namespace SAW_TRAY_VISION_V01
 
         private void Bt_Save_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ParametersPage", "Clicked Save Button");
             MyGlobals.Parasv3.FromDataSet();
             MyGlobals.Parasv3.ToXml();
         }
 
         private void Bt_Default_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ParametersPage", "Clicked Default Button");
             MyGlobals.Parasv3.FromDefault();
             Show_Table();
         }
 
         private void Bt_Refesh_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ParametersPage", "Clicked Refesh Button");
             MyGlobals.Parasv3.FromXml();
             Show_Table();
         }
@@ -68,6 +71,7 @@ namespace SAW_TRAY_VISION_V01
 
         private void Bt_Apply_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("ParametersPage", "Clicked Apply Button");
             MyGlobals.Parasv3.FromDataSet();
         }
     }

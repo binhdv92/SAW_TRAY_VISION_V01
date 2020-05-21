@@ -25,7 +25,6 @@ namespace SAW_TRAY_VISION_V01
     {
         public static Parametersv3 Parasv3 = new Parametersv3();
         public static Products Prods = new Products();
-        
 
 
         public static HomePage _Home_Page = new HomePage();
@@ -44,7 +43,8 @@ namespace SAW_TRAY_VISION_V01
             //MyGlobals.Parasv3.Update_ManualSaveImage_FileName();
             //MyGlobals.Parasv3.Update_FolderAutoSaveAllImage_FileName();
             MyGlobals.Parasv3.Update_All_FileName();
-            MyGlobals.Parasv3.LogWriter = new StreamWriter(MyGlobals.Parasv3.LogFile);
+            //MyGlobals.Parasv3.LogWriter = new StreamWriter(MyGlobals.Parasv3.LogFile);
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Start Machine");
 
             //
             Frame_WorkPage.Content = MyGlobals._Home_Page;
@@ -58,18 +58,13 @@ namespace SAW_TRAY_VISION_V01
         {
 
             Frame_WorkPage.Content = MyGlobals._Home_Page;
-        }
-
-        private void BtnRecipe_Click(object sender, RoutedEventArgs e)
-        {
-
-            //Frame_WorkPage.Content = MyGlobals.RPW;
-
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Click Home Button");
         }
 
         private void Btn_About_Click(object sender, RoutedEventArgs e)
         {
             Frame_WorkPage.Content = MyGlobals._About_Page;
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Click About Button");
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -80,16 +75,19 @@ namespace SAW_TRAY_VISION_V01
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             MyGlobals._Home_Page.StopCamera();
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Stop Machine");
         }
 
         private void BtnParameter_Click(object sender, RoutedEventArgs e)
         {
             Frame_WorkPage.Content = MyGlobals._Parameters_Page;
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Click Parameter Button");
         }
 
         private void BtnProduct_Click(object sender, RoutedEventArgs e)
         {
             Frame_WorkPage.Content = MyGlobals._ProductList_Page;
+            MyGlobals.Parasv3.WriteToLog("MainWindow", "Click Product Button");
         }
     }
 }

@@ -469,10 +469,8 @@ namespace SAW_TRAY_VISION_V01
             // ---Create a Output_File_Name Randomly.
             Cb_Recipe.ItemsSource = MyGlobals.Prods.TrayIDList;
             Cb_Recipe.SelectedIndex = MyGlobals.Parasv3.RecipeSelectedIndex;
-            MyGlobals.Parasv3.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
             Console.WriteLine($"Seleted Tray Target: {MyGlobals.Parasv3.Detection_Target_ID}");
 
-            //Tb_Save_Result.Text = MyGlobals.Parasv3.SaveImage_File_Name[0];
             Lb_Threshold.Content = MyGlobals.Parasv3.Threshold_Trigger;
 
             //
@@ -554,6 +552,7 @@ namespace SAW_TRAY_VISION_V01
                         StateMachine_Running();
                         if (Threshold_Counter == MyGlobals.Parasv3.Threshold_Trigger)
                         {
+                            MyGlobals.Parasv3.WriteToLog("HomePage", "Trigger new Tray and capture new image");
                             StateMachine_Flag = "CAPTURE";
                         }
                         break;
@@ -562,7 +561,6 @@ namespace SAW_TRAY_VISION_V01
                         Lb_Status.Content = "CAPTURE";
                         Btn_Capture_Click(null, null);
                         StateMachine_Flag = "DETECT";
-                        //Threshold_Counter = 0;
                         break;
 
                     case "DETECT":
@@ -577,7 +575,6 @@ namespace SAW_TRAY_VISION_V01
                                 Save_Inspection_Result(MyGlobals.Parasv3.FileName_FolderAutoSaveAllImage);
 
                             }
-
                         }
                         else if(Lb_Mode.Content.ToString() == "DRY")
                         {
@@ -592,23 +589,24 @@ namespace SAW_TRAY_VISION_V01
                         break;
 
                     case "MAKE DECISION":
-
                         Lb_Status.Content = "MAKE DECISION";
                         if (Lb_Reslut.Content.ToString() == "PASS")
                         {
+                            MyGlobals.Parasv3.WriteToLog("Result", $"PASS on {MyGlobals.Parasv3.Detection_Target_ID} {MyGlobals.Parasv3.Detection_Target_ID_Str}");
                             StateMachine_Running();
                             StateMachine_Flag = "RUNNING";
                         }
                         else if (Lb_Reslut.Content.ToString() == "NO TRAY")
                         {
+                            MyGlobals.Parasv3.WriteToLog("Result", $"NO TRAY on {MyGlobals.Parasv3.Detection_Target_ID} {MyGlobals.Parasv3.Detection_Target_ID_Str}");
                             StateMachine_Running();
                             StateMachine_Flag = "RUNNING";
                         }
                         else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
                         {
+                            MyGlobals.Parasv3.WriteToLog("Result", $"WRONG TRAY on {MyGlobals.Parasv3.Detection_Target_ID} {MyGlobals.Parasv3.Detection_Target_ID_Str}");
                             StateMachine_WrongTray();
                             Dt_StateMachine.Stop();
-
                             if (MyGlobals.Parasv3.Flag_Auto_Save_Defect_Image == true)
                             {
                                 MyGlobals.Parasv3.Update_All_FileName();
@@ -694,9 +692,6 @@ namespace SAW_TRAY_VISION_V01
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
             Cb_Trigger.IsEnabled = false;
 
-            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
-            //Cb_Trigger.IsChecked = false; 
-
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
             //Cb_DO_Amber_Light.IsChecked = true; 
@@ -730,9 +725,9 @@ namespace SAW_TRAY_VISION_V01
             Btn_Save_Result.IsEnabled = true;
 
             //Status
-            //Lb_Status.Content = "MANUAL";
             Lb_Reslut.Content = "---";
             Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+
             // ComboBox
             Cb_Camera.IsEnabled = true;
             Cb_Recipe.IsEnabled = true;
@@ -740,9 +735,6 @@ namespace SAW_TRAY_VISION_V01
             //Digital Input
             Cb_DI_Tray_Present_Sensor.IsEnabled = false;
             Cb_Trigger.IsEnabled = false;
-
-            //Cb_DI_Tray_Present_Sensor.IsChecked = false; 
-            //Cb_Trigger.IsChecked = false; 
 
             //Digital Output
             Cb_DO_Red_Light.IsChecked = false;
@@ -761,44 +753,37 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Init_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("HomePage", "Click Init");
+            StopCamera();
+            try // Init Camera
+            {
+                StartCamera_02();
+                Lb_Status_Camera.Content = "Good";
+                Lb_Status_Camera.Background = System.Windows.Media.Brushes.Green;
+            
+            }
+            catch
+            {
+                MessageBox.Show("Error103: Failt to start Camera");
                 StopCamera();
-                try // Init Camera
-                {
-                    //if (Lb_Status_Camera.Content.ToString() != "Good")
-                    //{
-                    //GetVideoDevices();
-                    //StartCamera_02(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
-                        StartCamera_02();
-                        //flag_init_Camera = true;
-                        Lb_Status_Camera.Content = "Good";
-                    //}
-                }
-                catch
-                {
-                    MessageBox.Show("Error103: Failt to start Camera");
-                    StopCamera();
-                    //StateMachine_NotInit();
-                    //flag_init_Camera = false;
-                    Lb_Status_Camera.Content = "Fail";
-                }
+                Lb_Status_Camera.Content = "Fail";
+                Lb_Status_Camera.Background = System.Windows.Media.Brushes.Red;
+            }
             
-            
-
             try // ---Modbus Server Setup
             {
                 modbusClient = new ModbusClient(MyGlobals.Parasv3.Modbus.IP, MyGlobals.Parasv3.Modbus.Port);
                 modbusClient.LogFileFilename = MyGlobals.Parasv3.Modbus.LogFile;
                 modbusClient.Connect();
                 Dt_Modbus.Start();
-                //flag_init_Modbus = true;
                 Lb_Status_Modbus.Content = "Good";
+                Lb_Status_Modbus.Background = System.Windows.Media.Brushes.Green;
             }
             catch
             {
                 MessageBox.Show("Error102: Fail to connect to the Modbus Server at the address " + MyGlobals.Parasv3.Modbus.IP + ":" + MyGlobals.Parasv3.Modbus.Port);
-                //StateMachine_NotInit();
-                //flag_init_Modbus = false;
                 Lb_Status_Modbus.Content = "Fail";
+                Lb_Status_Modbus.Background = System.Windows.Media.Brushes.Red;
             }
 
 
@@ -806,16 +791,22 @@ namespace SAW_TRAY_VISION_V01
             {
                 flag_init = true;
                 Lb_Status_Global.Content = "Good";
+                Lb_Status_Global.Background= System.Windows.Media.Brushes.Green;
+                Lb_Status.Content = "Init success";
+                MyGlobals.Parasv3.WriteToLog("HomePage", "Init success");
             }
             else
             {
                 flag_init = false;
                 Lb_Status_Global.Content= "Fail";
+                Lb_Status_Global.Background = System.Windows.Media.Brushes.Red;
+                MyGlobals.Parasv3.WriteToLog("HomePage", "Init fail");
             }
         }
 
         private void Btn_Start_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("HomePage", "Click START");
             if(Lb_Status_Global.Content.ToString() != "Good")
             {
                 MessageBox.Show("Error1010: Tool is not yet INIT, please do INIT to continue");
@@ -830,12 +821,16 @@ namespace SAW_TRAY_VISION_V01
                 Cb_Camera.IsEnabled = false;
             }
         }
+
         private void Btn_Restart_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("HomePage", "Click RE-START");
             Btn_Start_Click(null, null);
         }
+
         private void Btn_Stop_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("HomePage", "Click STOP");
             StateMachine_Idle();
             Dt_StateMachine.Stop();
 
@@ -864,7 +859,6 @@ namespace SAW_TRAY_VISION_V01
                 //Convert Bitmap to byte[]
                 PngBitmapEncoder Encoder_Temp = new PngBitmapEncoder();
                 Encoder_Temp.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
-                //Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)ImgSnapShoot.Source));
                 using (MemoryStream ms = new MemoryStream())
                 {
                     Encoder_Temp.Save(ms);
@@ -879,9 +873,7 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
-            Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
-            //var Items_Temp_yolov3_format = ToYolov3OriginFormat(Items_Temp, this.DataByte_Public);
-            
+            Items_Temp = yoloWrapper.Detect(this.DataByte_Public);            
             Dg_Debug.ItemsSource = Items_Temp;
 
             #region Draw the result onto Raw image
@@ -995,8 +987,6 @@ namespace SAW_TRAY_VISION_V01
                         newRow["Y"] = row.Y.ToString().PadLeft(5, '0');
                         newRow["Width"] = row.Width;
                         newRow["Height"] = row.Height;
-                        //double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
-                        //double y = double.Parse(newRow["Y"].ToString()) + double.Parse(newRow["Height"].ToString()) / 2;
                         double x = double.Parse(newRow["X"].ToString()) + double.Parse(newRow["Width"].ToString()) / 2;
                         double y = double.Parse(newRow["Y"].ToString()) + _Temp_Box_Height / 2;
                         if ((x_min <= x) && (x_max >= x) && (y_min <= y) && (y_max >= y) && (row.Type.ToString() != "box"))
@@ -1034,34 +1024,28 @@ namespace SAW_TRAY_VISION_V01
             //
             if (Pass_FLAG == 0 && Fail_FLAG == 0)
             {
-                //Final_Result_Flag = "NO TRAY";
                 MyGlobals.Parasv3.Detect_Result = "NO TRAY";
                 Lb_Reslut.Content = "NO TRAY";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Orange;
             }
             else if(Fail_FLAG > 0)
             {
-                //Final_Result_Flag = "WRONG TRAY";
-                MyGlobals.Parasv3.Detect_Result = "NO TRAY";
+                MyGlobals.Parasv3.Detect_Result = "WRONG TRAY";
                 Lb_Reslut.Content = "WRONG TRAY";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
             }
             else if (Pass_FLAG>0 && Fail_FLAG == 0)
             {
-                //Final_Result_Flag = "PASS";
-                MyGlobals.Parasv3.Detect_Result = "NO TRAY";
-                Lb_Reslut.Content = "NO TRAY";
+                MyGlobals.Parasv3.Detect_Result = "PASS";
+                Lb_Reslut.Content = "PASS";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
             }
             #endregion
             Dg_TrayID.ItemsSource = tray_ID_list;
         }
 
-        
         private void Btn_Result_Click(object sender, RoutedEventArgs e)
         {
-
-
             if (Lb_Reslut.Content.ToString() == "PASS")
             {
                 StateMachine_Running();
@@ -1075,7 +1059,6 @@ namespace SAW_TRAY_VISION_V01
             else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
             {
                 StateMachine_WrongTray();
-
                 Dt_StateMachine.Stop();
 
             }
@@ -1083,6 +1066,7 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_BuzzerOff_Click(object sender, RoutedEventArgs e)
         {
+            MyGlobals.Parasv3.WriteToLog("HomePage", "Click BUZZER-OFF");
             Cb_DO_Buzzer.IsChecked = false;
         }
 
@@ -1108,17 +1092,18 @@ namespace SAW_TRAY_VISION_V01
             {
                 MessageBox.Show("Error 0001: Wago Modbus Cotroller is not inited, Please do init to continue");
             }
-            //
         }
-
 
         #endregion
 
         #region Helper Videos Function
         private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           MyGlobals.Parasv3.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
+            MyGlobals.Parasv3.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('-')[1];
+            MyGlobals.Parasv3.Detection_Target_ID_Str = Cb_Recipe.SelectedItem.ToString();
             Console.WriteLine($"Seleted Tray Target: {MyGlobals.Parasv3.Detection_Target_ID}");
+            MyGlobals.Parasv3.WriteToLog("HomePage", $"Choosed Recipe {MyGlobals.Parasv3.Detection_Target_ID} {MyGlobals.Parasv3.Detection_Target_ID_Str}");
+        
         }
 
         private void video_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
@@ -1128,7 +1113,6 @@ namespace SAW_TRAY_VISION_V01
                 BitmapImage bi;
                 using (var bitmap = (Bitmap)eventArgs.Frame.Clone())
                 {
-                    
                     bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     bi = bitmap.ToBitmapImage();
 
@@ -1197,12 +1181,10 @@ namespace SAW_TRAY_VISION_V01
         }
         public void StopCamera()
         {
-            //if (_videoSource != null && _videoSource.IsRunning)
-            //{
-                _videoSource.SignalToStop();
-                _videoSource.Stop();
-                _videoSource.NewFrame -= new NewFrameEventHandler(video_NewFrame);
-            //}
+            _videoSource.SignalToStop();
+            _videoSource.Stop();
+            _videoSource.NewFrame -= new NewFrameEventHandler(video_NewFrame);
+            
         }
         #endregion
 
@@ -1280,7 +1262,6 @@ namespace SAW_TRAY_VISION_V01
         private void Cb_Camera_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             StopCamera();
-            //StartCamera_02(VideoDevices[Cb_Camera.SelectedIndex].MonikerString);
             StartCamera_02();
         }
 
@@ -1288,30 +1269,23 @@ namespace SAW_TRAY_VISION_V01
         {
             if(Lb_Mode.Content.ToString() == "AUTO")
             {
+                MyGlobals.Parasv3.WriteToLog("HomePage", "Switch to DRY mode");
                 Btn_Dry_Click(null, null);
 
             }
             else if(Lb_Mode.Content.ToString() == "DRY")
             {
+                MyGlobals.Parasv3.WriteToLog("HomePage", "Switch to MANUAL mode");
                 Btn_Manual_Click(null, null);
 
             }
             else if (Lb_Mode.Content.ToString() == "MANUAL")
             {
+                MyGlobals.Parasv3.WriteToLog("HomePage", "Switch to AUTO mode");
                 Btn_Auto_Click(null, null);
 
             }
-            else
-            {
-
-            }
         }
-
-        private void Bt_Stop_Camera_Click(object sender, RoutedEventArgs e)
-        {
-            StopCamera();
-        }
-
     }
 
 }

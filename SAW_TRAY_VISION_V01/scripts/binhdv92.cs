@@ -453,7 +453,7 @@ namespace SAW_TRAY_VISION_V01
         public string FolderAutoSaveDefectImagePath = "images/AutoSaveDefectImage";
         public string FolderAutoSaveAllImagePath = "images/AutoSaveAllImage";
         public string FolderLogPath = "logs";
-        public string LogFile = "log.txt";
+        public string LogFile = "logs/log.txt";
         public string Xmlfile = "sources/parameters.xml";
         public StreamWriter LogWriter;
 
@@ -464,6 +464,7 @@ namespace SAW_TRAY_VISION_V01
         public string FileName_To_ManualSaveImage;
         public string RandomStrDateKey;
         public string Detection_Target_ID;
+        public string Detection_Target_ID_Str;
         public DataSet ParametersDataset = new DataSet();
         public int RecipeSelectedIndex=2;
         public string Detect_Result = "---";
@@ -848,46 +849,21 @@ namespace SAW_TRAY_VISION_V01
             Flag_Auto_Save_All_Image = Boolean.Parse(TempRow2[0][1].ToString());
            
         }
-        /*
-        public void Update_ManualSaveImage_FileName()
-        {
-            FileName_To_ManualSaveImage = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_---_origin.jpg";
-            FileName_ManualSaveImage[0] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_ManualSaveImage[1] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_ManualSaveImage[2] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
-
-        }
-
-        public void Update_FolderAutoSaveDefectImage_FileName()
-        { 
-            FileName_AutoSaveDefectImage[0] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_AutoSaveDefectImage[1] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_AutoSaveDefectImage[2] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
-
-        }
-
-        public void Update_FolderAutoSaveAllImage_FileName()
-        {
-            FileName_FolderAutoSaveAllImage[0] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_FolderAutoSaveAllImage[1] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_FolderAutoSaveAllImage[2] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
-
-        }
-        */
+        
         public void Update_All_FileName()
         {
-            FileName_To_ManualSaveImage = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_---_origin.jpg";
-            FileName_ManualSaveImage[0] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_ManualSaveImage[1] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_ManualSaveImage[2] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+            FileName_To_ManualSaveImage = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_---_origin.jpg";
+            FileName_ManualSaveImage[0] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.jpg";
+            FileName_ManualSaveImage[1] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_detected.jpg";
+            FileName_ManualSaveImage[2] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.txt";
 
-            FileName_AutoSaveDefectImage[0] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_AutoSaveDefectImage[1] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_AutoSaveDefectImage[2] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+            FileName_AutoSaveDefectImage[0] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.jpg";
+            FileName_AutoSaveDefectImage[1] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_detected.jpg";
+            FileName_AutoSaveDefectImage[2] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.txt";
 
-            FileName_FolderAutoSaveAllImage[0] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
-            FileName_FolderAutoSaveAllImage[1] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
-            FileName_FolderAutoSaveAllImage[2] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+            FileName_FolderAutoSaveAllImage[0] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.jpg";
+            FileName_FolderAutoSaveAllImage[1] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_detected.jpg";
+            FileName_FolderAutoSaveAllImage[2] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID_Str}_{Detect_Result}_origin.txt";
 
         }
         //FileName_To_ManualSaveImage
@@ -919,7 +895,7 @@ namespace SAW_TRAY_VISION_V01
             DateTime _Now = new DateTime();
             _Now = DateTime.Now;
             //
-            string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
+            string NowStr = _Now.ToString("yyy-M-dd_hh-mm-tt");
             //
             StringBuilder _builder = new StringBuilder();
             _builder.Append(RandomString(10, true));
@@ -928,6 +904,19 @@ namespace SAW_TRAY_VISION_V01
         }
 
         #endregion Định nghĩa các Hàm, Method của Class
+
+        public void WriteToLog(string key, string content)
+        {
+            DateTime _Now = new DateTime();
+            _Now = DateTime.Now;
+            string NowStr = _Now.ToString("yyy-MM-dd hh-mm-ss.ffffK");
+            string NowStr2= _Now.ToString($"yyyy_MM_dd");
+
+            string filename = $"{FolderLogPath}/{NowStr2}.log";
+            string Tempstr = $"{NowStr} {key} {content}";
+            File.AppendAllText(filename, Tempstr + Environment.NewLine);
+              
+        }
     }
 
     public class Products
@@ -964,8 +953,6 @@ namespace SAW_TRAY_VISION_V01
 
         public void FromDefault()
         {
-            //ProductsList
-            //DataSet TempDataSet = new DataSet("Products");
             DataTable TempDataTable = new DataTable("Product");
 
             TempDataTable.Columns.Add("ID", typeof(int));
@@ -1001,8 +988,6 @@ namespace SAW_TRAY_VISION_V01
 
             ProductsTable = TempDataTable;
             GetTrayIDList();
-            //TempDataSet.Tables.Add(TempDataTable);
-            //ProductsDataSet = TempDataSet;
         }
 
         public void ToXml()
@@ -1039,7 +1024,7 @@ namespace SAW_TRAY_VISION_V01
             TrayIDList = new List<string>();
             for (int tempi = 0; tempi < ProductsTable.Rows.Count; tempi++)
             {
-                TrayIDList.Add($"{ProductsTable.Rows[tempi]["ID"].ToString()}|{ProductsTable.Rows[tempi]["TrayID"]}|{ProductsTable.Rows[tempi]["Product"]}");
+                TrayIDList.Add($"{ProductsTable.Rows[tempi]["ID"].ToString()}-{ProductsTable.Rows[tempi]["TrayID"]}-{ProductsTable.Rows[tempi]["Product"]}");
             }
         }
     }
