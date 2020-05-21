@@ -13,7 +13,7 @@ SAW_TRAY_VISION_V01_SETUP/Release/*
 SAW_TRAY_VISION_V01/bin/x64/Release
 
 SAW_TRAY_VISION_V01/bin/x64/Debug/sources/algorithm/cfg/yolov3-itn-fullbox_last.weights
-SAW_TRAY_VISION_V01/bin/x64/Debug/app.publish
+#SAW_TRAY_VISION_V01/bin/x64/Debug/app.publish
 SAW_TRAY_VISION_V01/bin/x64/Debug/images
 SAW_TRAY_VISION_V01/bin/x64/Debug/logs
 SAW_TRAY_VISION_V01/bin/x64/Debug/outputs
@@ -25,8 +25,10 @@ SAW_TRAY_VISION_V01/bin/x64/Debug/*.exe
 SAW_TRAY_VISION_V01/bin/x64/Debug/*.config
 SAW_TRAY_VISION_V01/bin/x64/Debug/*.pdb
 SAW_TRAY_VISION_V01/bin/x64/Debug/*.vs
-SAW_TRAY_VISION_V01/bin/x64/Debug/*.xml
+#SAW_TRAY_VISION_V01/bin/x64/Debug/*.xml
 SAW_TRAY_VISION_V01/bin/x64/Debug/*.log
+#SAW_TRAY_VISION_V01/bin/x64/Debug/*.manifest
+#SAW_TRAY_VISION_V01/bin/x64/Debug/*.application
 
 
 
