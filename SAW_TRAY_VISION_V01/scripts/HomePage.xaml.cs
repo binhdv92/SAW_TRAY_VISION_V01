@@ -74,8 +74,6 @@ namespace SAW_TRAY_VISION_V01
         #region Khai Bao Bien Toan Cuc
         public BitmapImage BitmapImage_public;
         public System.Collections.Generic.IEnumerable<YoloItem> Items_Temp;
-        string Detection_Target_ID = "N/A";
-
         string UriSource_TestImage = AppDomain.CurrentDomain.BaseDirectory + @"sources\media\CameraSnapshot.jpg";
         public byte[] DataByte_Public;
         public BitmapImage Bi_Public;
@@ -106,7 +104,7 @@ namespace SAW_TRAY_VISION_V01
         public string Final_Result_Flag;
         public System.Drawing.Image Img_Drawing;
         public RandomGenerator _randomGenerator = new RandomGenerator();
-        public string[] Output_File_Name;
+
         #endregion
 
         #region Ham con
@@ -115,11 +113,9 @@ namespace SAW_TRAY_VISION_V01
             List<string> tempstrlist=new List<string>();
             string tempstr;
 
-            float X,Y,Width,Height;
+            float X, Y, Width, Height;
             int Type;
             var templen = BitmapImage_public.Width;
-
-            
 
             using (StreamWriter writer = new StreamWriter(filename))
             {
@@ -144,7 +140,6 @@ namespace SAW_TRAY_VISION_V01
                 }
             }
 
-            //tempstr = $"{X},{Y},{Width},{Height}";
             return (tempstrlist);
         }
 
@@ -472,31 +467,19 @@ namespace SAW_TRAY_VISION_V01
 
             //Initial Random string
             // ---Create a Output_File_Name Randomly.
-            Output_File_Name = _randomGenerator.Random_Output_File_Name();
-            Tb_Save_Result.Text = Output_File_Name[0];
+            Cb_Recipe.ItemsSource = MyGlobals.Prods.TrayIDList;
+            Cb_Recipe.SelectedIndex = MyGlobals.Parasv3.RecipeSelectedIndex;
+            MyGlobals.Parasv3.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
+            Console.WriteLine($"Seleted Tray Target: {MyGlobals.Parasv3.Detection_Target_ID}");
 
-            //
-            //string TempStr=Paras.LoadAllParameters();
-            //if (TempStr == "ERROR"){
-            //    MessageBox.Show("Error105: MyConfiguration.LoadAllParameters() get error");
-            //}
+            //Tb_Save_Result.Text = MyGlobals.Parasv3.SaveImage_File_Name[0];
             Lb_Threshold.Content = MyGlobals.Parasv3.Threshold_Trigger;
 
-            //
             //
             yoloWrapper = new YoloWrapper(MyGlobals.Parasv3.Algorithm.Cfg, MyGlobals.Parasv3.Algorithm.Weights, MyGlobals.Parasv3.Algorithm.Names);
 
             //
-            // Products.LoadProductLists_Str();
-            //TrayIDList = Products._ProductLists_Str;
-            //TrayIDList = MyGlobals.Prods.ProductsTable;
-            
-            Cb_Recipe.ItemsSource = MyGlobals.Prods.TrayIDList;
-            Cb_Recipe.SelectedIndex = 2;
-
-            //
             Btn_Auto_Click(null, null);
-
 
             //
             Dt_Modbus.Interval = TimeSpan.FromMilliseconds(MyGlobals.Parasv3.Modbus.IntervalTime);
@@ -588,18 +571,22 @@ namespace SAW_TRAY_VISION_V01
                         if (Lb_Mode.Content.ToString() == "AUTO")
                         {
                             StateMachine_Flag = "MAKE DECISION";
-                            if (MyGlobals.Parasv3.Flag_Collect_Image_Sample == true)
+                            if (MyGlobals.Parasv3.Flag_Auto_Save_All_Image == true)
                             {
-                                Btn_Save_Result_Click(null, null);
+                                MyGlobals.Parasv3.Update_All_FileName();
+                                Save_Inspection_Result(MyGlobals.Parasv3.FileName_FolderAutoSaveAllImage);
+
                             }
 
                         }
                         else if(Lb_Mode.Content.ToString() == "DRY")
                         {
                             StateMachine_Flag = "RUNNING";
-                            if (MyGlobals.Parasv3.Flag_Auto_Save_Image == true)
+                            if (MyGlobals.Parasv3.Flag_Auto_Save_All_Image == true)
                             {
-                                Btn_Save_Result_Click(null,null);
+                                MyGlobals.Parasv3.Update_All_FileName();
+                                Save_Inspection_Result(MyGlobals.Parasv3.FileName_FolderAutoSaveAllImage);
+
                             }
                         }
                         break;
@@ -620,9 +607,13 @@ namespace SAW_TRAY_VISION_V01
                         else if (Lb_Reslut.Content.ToString() == "WRONG TRAY")
                         {
                             StateMachine_WrongTray();
-                            Btn_Save_Result_Click(null, null);
                             Dt_StateMachine.Stop();
 
+                            if (MyGlobals.Parasv3.Flag_Auto_Save_Defect_Image == true)
+                            {
+                                MyGlobals.Parasv3.Update_All_FileName();
+                                Save_Inspection_Result(MyGlobals.Parasv3.FileName_AutoSaveDefectImage);
+                            }
                         }
                         break;
                 }
@@ -857,6 +848,9 @@ namespace SAW_TRAY_VISION_V01
             Dg_TrayID.ItemsSource = null;
             Lb_Reslut.Content = "---";
             Lb_Reslut.Background = System.Windows.Media.Brushes.Gray;
+            MyGlobals.Parasv3.RandomStrDateKey = MyGlobals.Parasv3.Random_Date_String_Key();
+            MyGlobals.Parasv3.Update_All_FileName();
+            Tb_Save_Result.Text = MyGlobals.Parasv3.FileName_To_ManualSaveImage;
         }
 
         public void Preprocess_Image_Function()
@@ -882,6 +876,7 @@ namespace SAW_TRAY_VISION_V01
                 MessageBox.Show("Error101: Cannot Capture Image");
             }
         }
+
         private void Btn_Detect_Click(object sender, RoutedEventArgs e)
         {
             Items_Temp = yoloWrapper.Detect(this.DataByte_Public);
@@ -1017,7 +1012,7 @@ namespace SAW_TRAY_VISION_V01
                     {
                         trayID = trayID + dview_sort[i_char]["Type"].ToString();
                     }
-                    result = new DetectionResult(i_group.ToString(), trayID, Detection_Target_ID);
+                    result = new DetectionResult(i_group.ToString(), trayID, MyGlobals.Parasv3.Detection_Target_ID);
                     tray_ID_list.Add(result);
                 }
             }
@@ -1040,19 +1035,22 @@ namespace SAW_TRAY_VISION_V01
             if (Pass_FLAG == 0 && Fail_FLAG == 0)
             {
                 //Final_Result_Flag = "NO TRAY";
+                MyGlobals.Parasv3.Detect_Result = "NO TRAY";
                 Lb_Reslut.Content = "NO TRAY";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Orange;
             }
             else if(Fail_FLAG > 0)
             {
                 //Final_Result_Flag = "WRONG TRAY";
+                MyGlobals.Parasv3.Detect_Result = "NO TRAY";
                 Lb_Reslut.Content = "WRONG TRAY";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Red;
             }
             else if (Pass_FLAG>0 && Fail_FLAG == 0)
             {
                 //Final_Result_Flag = "PASS";
-                Lb_Reslut.Content = "PASS";
+                MyGlobals.Parasv3.Detect_Result = "NO TRAY";
+                Lb_Reslut.Content = "NO TRAY";
                 Lb_Reslut.Background = System.Windows.Media.Brushes.Green;
             }
             #endregion
@@ -1119,8 +1117,8 @@ namespace SAW_TRAY_VISION_V01
         #region Helper Videos Function
         private void Cb_Recipe_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
-            Console.WriteLine($"Seleted Tray Target: {Detection_Target_ID}");
+           MyGlobals.Parasv3.Detection_Target_ID = Cb_Recipe.SelectedItem.ToString().Split('|')[1];
+            Console.WriteLine($"Seleted Tray Target: {MyGlobals.Parasv3.Detection_Target_ID}");
         }
 
         private void video_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
@@ -1237,6 +1235,12 @@ namespace SAW_TRAY_VISION_V01
 
         private void Btn_Save_Result_Click(object sender, RoutedEventArgs e)
         {
+            Save_Inspection_Result(MyGlobals.Parasv3.FileName_ManualSaveImage);
+
+        }
+
+        private void Save_Inspection_Result(string[] Output_File_Name)
+        {
             //Preprocess_Image_Function();
             PngBitmapEncoder Encoder_Public = new PngBitmapEncoder();
             Encoder_Public.Frames.Add(BitmapFrame.Create((BitmapSource)this.Bi_Public));
@@ -1248,10 +1252,13 @@ namespace SAW_TRAY_VISION_V01
                     stream5.Close();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name[0] + "\n\r\n\r" + ex);
             }
+
+            //to Yolov3 Text Format label
+            ToYolov3OriginFormat(this.Items_Temp, this.BitmapImage_public, Output_File_Name[2]);
 
             //------------ Detected
             PngBitmapEncoder Encoder_Detected_Public = new PngBitmapEncoder();
@@ -1268,16 +1275,6 @@ namespace SAW_TRAY_VISION_V01
             {
                 MessageBox.Show("Error205: Fail to save result file to " + Output_File_Name[1] + "\n\r\n\r" + ex);
             }
-            
-
-            //to Yolov3 Text Format label
-            ToYolov3OriginFormat(Items_Temp, this.BitmapImage_public, Output_File_Name[2]);
-
-            //--- update random name
-            Output_File_Name = _randomGenerator.Random_Output_File_Name();
-            Tb_Save_Result.Text = Output_File_Name[0];
-
-            
         }
 
         private void Cb_Camera_SelectionChanged(object sender, SelectionChangedEventArgs e)

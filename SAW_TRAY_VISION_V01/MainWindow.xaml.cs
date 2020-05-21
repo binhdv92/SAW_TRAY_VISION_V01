@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Configuration;
+using System.IO;
 
 namespace SAW_TRAY_VISION_V01
 {
@@ -38,8 +39,18 @@ namespace SAW_TRAY_VISION_V01
         public MainWindow()
         {
             InitializeComponent();
-            
+            // init Para
+            //MyGlobals.Parasv3.Update_FolderAutoSaveDefectImage_FileName();
+            //MyGlobals.Parasv3.Update_ManualSaveImage_FileName();
+            //MyGlobals.Parasv3.Update_FolderAutoSaveAllImage_FileName();
+            MyGlobals.Parasv3.Update_All_FileName();
+            MyGlobals.Parasv3.LogWriter = new StreamWriter(MyGlobals.Parasv3.LogFile);
+
+            //
             Frame_WorkPage.Content = MyGlobals._Home_Page;
+            MyGlobals._Home_Page.Tb_Save_Result.Text = MyGlobals.Parasv3.FileName_ManualSaveImage[0];
+
+
 
         }
 

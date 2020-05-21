@@ -1,6 +1,6 @@
 <Parameters>
   <Modbuses>
-    <Modbus Name="Wago 750-324" IP="172.19.20.201" Port="502" LogFile="modbus.log" IntervalTime="50" />
+    <Modbus Name="Wago 750-324" IP="172.19.142.85" Port="502" LogFile="modbus.log" IntervalTime="50" />
   </Modbuses>
   <Algorithms>
     <Algorithm Name="yolov3" Cfg="sources/algorithm/cfg/yolov3-itn-fullbox.cfg" Weights="sources/algorithm/cfg/yolov3-itn-fullbox_last.weights" Names="sources/algorithm/cfg/itn_fullbox.names" BoxHeightMin="40" />
@@ -13,6 +13,7 @@
     <DI_Tray_Present_Sensor>0</DI_Tray_Present_Sensor>
     <Threshold_Trigger>10</Threshold_Trigger>
     <Timer_Interval_StateMachine>50</Timer_Interval_StateMachine>
-    <Flag_Auto_Save_Image>False</Flag_Auto_Save_Image>
+    <Flag_Auto_Save_Defect_Image>True</Flag_Auto_Save_Defect_Image>
+    <Flag_Auto_Save_All_Image>True</Flag_Auto_Save_All_Image>
   </Others>
 </Parameters>

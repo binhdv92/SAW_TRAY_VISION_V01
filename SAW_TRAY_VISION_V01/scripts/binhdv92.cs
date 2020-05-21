@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,19 @@ namespace SAW_TRAY_VISION_V01
             return builder.ToString();
         }
 
+        public string Random_Date_String_Key()
+        {
+            DateTime _Now = new DateTime();
+            _Now = DateTime.Now;
+            //
+            string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
+            //
+            StringBuilder _builder = new StringBuilder();
+            _builder.Append(RandomString(10, true));
+
+            return ($"{_Now}_{_builder}");
+        }
+
         public string[] Random_Output_File_Name()
         {
             DateTime _Now = new DateTime();
@@ -59,6 +73,11 @@ namespace SAW_TRAY_VISION_V01
             Output_File_Name[0] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.jpg";
             Output_File_Name[1] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Detected.jpg";
             Output_File_Name[2] = @"outputs\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.txt";
+
+            string[] Defect_File_Name = new string[3];
+            Defect_File_Name[0] = @"defects\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.jpg";
+            Defect_File_Name[1] = @"defects\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Detected.jpg";
+            Defect_File_Name[2] = @"defects\CameraSnapshot_" + NowStr + "_" + _builder.ToString() + "_Origin.txt";
             return Output_File_Name;
         }
     }
@@ -367,6 +386,7 @@ namespace SAW_TRAY_VISION_V01
             public int Port;
             public string LogFile;
             public int IntervalTime;
+
             public __Modbus(string name, string ip, int port, string logfile, int intervalltime)
             {
                 Name = name;
@@ -428,7 +448,27 @@ namespace SAW_TRAY_VISION_V01
         #endregion
 
         #region Khai báo biến và khởi tạo value default
+        // fixed variable parameters
+        public string FolderManualSaveImagePath = "images/ManualSaveImage";
+        public string FolderAutoSaveDefectImagePath = "images/AutoSaveDefectImage";
+        public string FolderAutoSaveAllImagePath = "images/AutoSaveAllImage";
+        public string FolderLogPath = "logs";
+        public string LogFile = "log.txt";
         public string Xmlfile = "sources/parameters.xml";
+        public StreamWriter LogWriter;
+
+        //Internal parameters
+        public string[] FileName_ManualSaveImage = new string[3];
+        public string[] FileName_AutoSaveDefectImage = new string[3];
+        public string[] FileName_FolderAutoSaveAllImage = new string[3];
+        public string FileName_To_ManualSaveImage;
+        public string RandomStrDateKey;
+        public string Detection_Target_ID;
+        public DataSet ParametersDataset = new DataSet();
+        public int RecipeSelectedIndex=2;
+        public string Detect_Result = "---";
+
+        //External parameters
         public __Modbus Modbus;
         public __Algorithm Algorithm;
         public __Tower Tower;
@@ -436,10 +476,8 @@ namespace SAW_TRAY_VISION_V01
         public int DI_Tray_Present_Sensor;
         public int Threshold_Trigger;
         public int Timer_Interval_StateMachine;
-        public Boolean Flag_Auto_Save_Image;
-        public Boolean Flag_Collect_Image_Sample;
-        //
-        public DataSet ParametersDataset = new DataSet();
+        public Boolean Flag_Auto_Save_Defect_Image;
+        public Boolean Flag_Auto_Save_All_Image;
 
 
         #endregion Khai báo biến và khởi tạo value default
@@ -447,8 +485,50 @@ namespace SAW_TRAY_VISION_V01
         #region Init, startup cho Class 
         public Parametersv3()
         {
+            RandomStrDateKey = Random_Date_String_Key();
             try
             {
+                System.IO.Directory.CreateDirectory(FolderAutoSaveAllImagePath);
+
+            }
+            catch
+            {
+                Console.WriteLine($"Fail to create {FolderAutoSaveAllImagePath}");
+            }
+            //
+            try
+            {
+                System.IO.Directory.CreateDirectory(FolderAutoSaveDefectImagePath);
+
+            }
+            catch
+            {
+                Console.WriteLine($"Fail to create {FolderAutoSaveDefectImagePath}");
+            }
+            //
+            try
+            {
+                System.IO.Directory.CreateDirectory(FolderManualSaveImagePath);
+
+            }
+            catch
+            {
+                Console.WriteLine($"Fail to create {FolderManualSaveImagePath}");
+            }
+            try
+            {
+                System.IO.Directory.CreateDirectory(FolderLogPath);
+
+            }
+            catch
+            {
+                Console.WriteLine($"Fail to create {FolderLogPath}");
+            }
+
+            //
+            try
+            {
+                //FromDefault();
                 FromXml();
             }
             catch
@@ -471,14 +551,14 @@ namespace SAW_TRAY_VISION_V01
                 "sources/algorithm/cfg/itn_fullbox.names",
                 40
              );
-            Tower = new __Tower("Tower", 0, -1, 1, 2);
+            this.Tower = new __Tower("Tower", 0, -1, 1, 2);
             this.DO_Disable_Tray_Loading = 3;
             this.DI_Tray_Present_Sensor = 0;
             this.Threshold_Trigger = 10;
             this.Timer_Interval_StateMachine = 50;
-            this.Flag_Auto_Save_Image = true;
-            this.Flag_Collect_Image_Sample = false;
-        }
+            this.Flag_Auto_Save_Defect_Image = true;
+            this.Flag_Auto_Save_All_Image = false;
+    }
 
         public void ToXml()
         {
@@ -593,12 +673,12 @@ namespace SAW_TRAY_VISION_V01
             TempNode.InnerText = Timer_Interval_StateMachine.ToString();
             OthersNode.AppendChild(TempNode);
 
-            TempNode = xmlDoc.CreateElement("Flag_Auto_Save_Image");
-            TempNode.InnerText = Flag_Auto_Save_Image.ToString();
+            TempNode = xmlDoc.CreateElement("Flag_Auto_Save_Defect_Image");
+            TempNode.InnerText = Flag_Auto_Save_Defect_Image.ToString();
             OthersNode.AppendChild(TempNode);
 
-            TempNode = xmlDoc.CreateElement("Flag_Collect_Image_Sample");
-            TempNode.InnerText = Flag_Collect_Image_Sample.ToString();
+            TempNode = xmlDoc.CreateElement("Flag_Auto_Save_All_Image");
+            TempNode.InnerText = Flag_Auto_Save_All_Image.ToString();
             OthersNode.AppendChild(TempNode);
 
             #endregion other
@@ -648,11 +728,11 @@ namespace SAW_TRAY_VISION_V01
             TempNode = TempDoc.SelectNodes("//Parameters/Others/Timer_Interval_StateMachine");
             Timer_Interval_StateMachine = int.Parse(TempNode[0].InnerText);
 
-            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Auto_Save_Image");
-            Flag_Auto_Save_Image = Boolean.Parse(TempNode[0].InnerText);
+            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Auto_Save_Defect_Image");
+            Flag_Auto_Save_Defect_Image = Boolean.Parse(TempNode[0].InnerText);
 
-            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Collect_Image_Sample");
-            Flag_Collect_Image_Sample = Boolean.Parse(TempNode[0].InnerText);
+            TempNode = TempDoc.SelectNodes("//Parameters/Others/Flag_Auto_Save_All_Image");
+            Flag_Auto_Save_All_Image = Boolean.Parse(TempNode[0].InnerText);
 
             
         }
@@ -693,8 +773,8 @@ namespace SAW_TRAY_VISION_V01
             OtherTable.Rows.Add(new object[] { "DI_Tray_Present_Sensor", DI_Tray_Present_Sensor });
             OtherTable.Rows.Add(new object[] { "Threshold_Trigger", Threshold_Trigger });
             OtherTable.Rows.Add(new object[] { "Timer_Interval_StateMachine", Timer_Interval_StateMachine });
-            OtherTable.Rows.Add(new object[] { "Flag_Auto_Save_Image", Flag_Auto_Save_Image });
-            OtherTable.Rows.Add(new object[] { "Flag_Collect_Image_Sample", Flag_Collect_Image_Sample });
+            OtherTable.Rows.Add(new object[] { "Flag_Auto_Save_Defect_Image", Flag_Auto_Save_Defect_Image });
+            OtherTable.Rows.Add(new object[] { "Flag_Auto_Save_All_Image", Flag_Auto_Save_All_Image });
             
 
             //
@@ -757,16 +837,94 @@ namespace SAW_TRAY_VISION_V01
             TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
             Timer_Interval_StateMachine = int.Parse(TempRow2[0][1].ToString());
 
-            Searchkey = "Flag_Auto_Save_Image";
+            Searchkey = "Flag_Auto_Save_Defect_Image";
             expression = $"Name=\'{Searchkey}\'";
             TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
-            Flag_Auto_Save_Image = Boolean.Parse(TempRow2[0][1].ToString());
+            Flag_Auto_Save_Defect_Image = Boolean.Parse(TempRow2[0][1].ToString());
 
-            Searchkey = "Flag_Collect_Image_Sample";
+            Searchkey = "Flag_Auto_Save_All_Image";
             expression = $"Name=\'{Searchkey}\'";
             TempRow2 = ParametersDataset.Tables["Other"].Select(expression);
-            Flag_Collect_Image_Sample = Boolean.Parse(TempRow2[0][1].ToString());
+            Flag_Auto_Save_All_Image = Boolean.Parse(TempRow2[0][1].ToString());
            
+        }
+        /*
+        public void Update_ManualSaveImage_FileName()
+        {
+            FileName_To_ManualSaveImage = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_---_origin.jpg";
+            FileName_ManualSaveImage[0] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_ManualSaveImage[1] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_ManualSaveImage[2] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+        }
+
+        public void Update_FolderAutoSaveDefectImage_FileName()
+        { 
+            FileName_AutoSaveDefectImage[0] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_AutoSaveDefectImage[1] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_AutoSaveDefectImage[2] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+        }
+
+        public void Update_FolderAutoSaveAllImage_FileName()
+        {
+            FileName_FolderAutoSaveAllImage[0] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_FolderAutoSaveAllImage[1] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_FolderAutoSaveAllImage[2] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+        }
+        */
+        public void Update_All_FileName()
+        {
+            FileName_To_ManualSaveImage = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_---_origin.jpg";
+            FileName_ManualSaveImage[0] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_ManualSaveImage[1] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_ManualSaveImage[2] = $"./{FolderManualSaveImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+            FileName_AutoSaveDefectImage[0] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_AutoSaveDefectImage[1] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_AutoSaveDefectImage[2] = $"./{FolderAutoSaveDefectImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+            FileName_FolderAutoSaveAllImage[0] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.jpg";
+            FileName_FolderAutoSaveAllImage[1] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_detected.jpg";
+            FileName_FolderAutoSaveAllImage[2] = $"./{FolderAutoSaveAllImagePath}/{RandomStrDateKey}_{Detection_Target_ID}_{Detect_Result}_origin.txt";
+
+        }
+        //FileName_To_ManualSaveImage
+
+        public int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+        }
+
+        // Generate a random string with a given size    
+        public string RandomString(int size, bool lowerCase)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (int i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+            if (lowerCase)
+                return builder.ToString().ToLower();
+            return builder.ToString();
+        }
+
+        public string Random_Date_String_Key()
+        {
+            DateTime _Now = new DateTime();
+            _Now = DateTime.Now;
+            //
+            string NowStr = _Now.ToString("yyy_M_dd_hh_mm_tt");
+            //
+            StringBuilder _builder = new StringBuilder();
+            _builder.Append(RandomString(10, true));
+
+            return ($"{NowStr}_{_builder}");
         }
 
         #endregion Định nghĩa các Hàm, Method của Class
@@ -800,8 +958,8 @@ namespace SAW_TRAY_VISION_V01
 
         #endregion Khai báo biến và khởi tạo value default
         public Products() {
-            FromDefault();
-            //FromXmlDataTable();
+            //FromDefault();
+            FromXmlDataTable();
         }
 
         public void FromDefault()
